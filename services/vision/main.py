@@ -92,10 +92,31 @@ async def detect_components(
         # Step 2: Detect components
         detected_components = detector.detect(preprocessed_image)
         
+        # Step 2.5: Autonomous SVE invocation for low-confidence/unknown components
+        sve_enriched_components = []
+        for component in detected_components:
+            # Check if SVE assistance needed
+            sve_result = await detector.generate_missing_symbol_via_sve(
+                component.component_type,
+                component.confidence
+            )
+            
+            # Enrich component with SVE-generated symbol if available
+            if sve_result and sve_result.get("status") == "success":
+                # Store SVE metadata in component for later use
+                if not hasattr(component, 'metadata'):
+                    component.metadata = {}
+                component.metadata['sve_symbol'] = sve_result.get('svg_content')
+                component.metadata['sve_quality'] = sve_result.get('quality_score', 0.0)
+                component.metadata['sve_cached'] = sve_result.get('from_cache', False)
+                print(f"  ✓ Component enriched with SVE symbol: {component.component_type}")
+            
+            sve_enriched_components.append(component)
+        
         # Step 3: OCR for values
         components_with_text = extract_text_values(
             preprocessed_image,
-            detected_components
+            sve_enriched_components
         )
         
         # Step 4: Wire tracing

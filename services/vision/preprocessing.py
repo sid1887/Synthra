@@ -114,28 +114,110 @@ def deskew(image: np.ndarray) -> np.ndarray:
 def correct_perspective(image: np.ndarray) -> np.ndarray:
     """
     Correct perspective distortion (if image is photographed at an angle)
+    Uses contour detection to find document boundaries
     """
     # Detect edges
     edges = cv2.Canny(image, 50, 150, apertureSize=3)
     
-    # Detect lines using Hough transform
-    lines = cv2.HoughLines(edges, 1, np.pi/180, 200)
+    # Find contours
+    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
-    if lines is None or len(lines) < 4:
-        return image  # Not enough lines to determine perspective
+    if not contours:
+        return image
     
-    # TODO: Implement full perspective correction using detected lines
-    # For now, return original image
+    # Find largest contour (document boundary)
+    largest_contour = max(contours, key=cv2.contourArea)
+    
+    # Filter small contours
+    if cv2.contourArea(largest_contour) < 1000:
+        return image
+    
+    # Approximate to quadrilateral
+    epsilon = 0.02 * cv2.arcLength(largest_contour, True)
+    approx = cv2.approxPolyDP(largest_contour, epsilon, True)
+    
+    if len(approx) == 4:
+        # Order points: top-left, top-right, bottom-right, bottom-left
+        pts = order_points(approx.reshape(4, 2))
+        
+        # Compute target dimensions
+        width = max(
+            np.linalg.norm(pts[0] - pts[1]),
+            np.linalg.norm(pts[2] - pts[3])
+        )
+        height = max(
+            np.linalg.norm(pts[0] - pts[3]),
+            np.linalg.norm(pts[1] - pts[2])
+        )
+        
+        dst = np.array([
+            [0, 0],
+            [width - 1, 0],
+            [width - 1, height - 1],
+            [0, height - 1]
+        ], dtype=np.float32)
+        
+        # Perspective transform
+        M = cv2.getPerspectiveTransform(pts.astype(np.float32), dst)
+        warped = cv2.warpPerspective(image, M, (int(width), int(height)))
+        return warped
+    
     return image
+
+
+def order_points(pts: np.ndarray) -> np.ndarray:
+    """Order points as: top-left, top-right, bottom-right, bottom-left"""
+    rect = np.zeros((4, 2), dtype=np.float32)
+    
+    # Sum: top-left has smallest sum, bottom-right has largest
+    s = pts.sum(axis=1)
+    rect[0] = pts[np.argmin(s)]
+    rect[2] = pts[np.argmax(s)]
+    
+    # Diff: top-right has smallest diff, bottom-left has largest
+    diff = np.diff(pts, axis=1)
+    rect[1] = pts[np.argmin(diff)]
+    rect[3] = pts[np.argmax(diff)]
+    
+    return rect
 
 
 def skeletonize(image: np.ndarray) -> np.ndarray:
     """
     Reduce binary image to single-pixel-wide skeleton
-    Useful for wire tracing
+    Useful for wire tracing - uses Zhang-Suen thinning algorithm
     """
-    from skimage.morphology import skeletonize as sk_skeletonize
-    return sk_skeletonize(image > 0).astype(np.uint8) * 255
+    # Ensure binary
+    _, binary = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
+    
+    # OpenCV thinning (Zhang-Suen algorithm)
+    skeleton = cv2.ximgproc.thinning(binary, thinningType=cv2.ximgproc.THINNING_ZHANGSUEN)
+    
+    return skeleton
+
+
+def extract_wire_segments(skeleton: np.ndarray) -> List[np.ndarray]:
+    """
+    Extract wire segments from skeletonized image
+    Returns list of polylines representing wires
+    """
+    # Find contours in skeleton
+    contours, _ = cv2.findContours(
+        skeleton, 
+        cv2.RETR_EXTERNAL, 
+        cv2.CHAIN_APPROX_SIMPLE
+    )
+    
+    # Filter and simplify contours to polylines
+    wire_segments = []
+    for contour in contours:
+        if cv2.contourArea(contour) > 10:  # Filter tiny fragments
+            # Approximate to polyline
+            epsilon = 0.01 * cv2.arcLength(contour, True)
+            approx = cv2.approxPolyDP(contour, epsilon, True)
+            wire_segments.append(approx)
+    
+    return wire_segments
 
 
 def enhance_contrast(image: np.ndarray) -> np.ndarray:

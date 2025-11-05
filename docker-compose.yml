@@ -34,10 +34,12 @@ services:
     environment:
       - MODEL_PATH=/models/yolov8_circuit.pt
       - UPLOAD_DIR=/uploads
+      - SVE_SERVICE_URL=http://sve:8000
     ports:
       - "8001:8000"
     depends_on:
       - db
+      - sve
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -111,6 +113,62 @@ services:
       timeout: 10s
       retries: 3
 
+  # SVE Service - AI-powered component symbol generation
+  sve:
+    build:
+      context: ./services/sve
+      dockerfile: Dockerfile
+    container_name: synthra-sve
+    volumes:
+      - ./services/sve:/app
+      - ./shared:/shared
+      - ./models/weights:/models
+      - huggingface_cache:/root/.cache/huggingface
+    environment:
+      - DATABASE_URL=postgresql://synthra:synthra_dev_password@db:5432/synthra
+      - HF_HOME=/root/.cache/huggingface
+      - TRANSFORMERS_CACHE=/root/.cache/huggingface
+      - TORCH_HOME=/root/.cache/torch
+    ports:
+      - "8005:8000"
+    depends_on:
+      - db
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Real-Time Service - WebSocket collaboration
+  realtime:
+    build:
+      context: ./services/realtime
+      dockerfile: Dockerfile
+    container_name: synthra-realtime
+    volumes:
+      - ./services/realtime:/app
+      - ./shared:/shared
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - CORE_SERVICE_URL=http://core:8000
+    ports:
+      - "8006:8000"
+    depends_on:
+      - redis
+      - core
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   # API Gateway - FastAPI orchestrator
   api:
     build:
@@ -126,6 +184,8 @@ services:
       - CORE_SERVICE_URL=http://core:8000
       - SIMULATOR_SERVICE_URL=http://simulator:8000
       - DOCS_SERVICE_URL=http://docs:8000
+      - SVE_SERVICE_URL=http://sve:8000
+      - REALTIME_SERVICE_URL=http://realtime:8000
       - REDIS_URL=redis://redis:6379
     ports:
       - "8000:8000"
@@ -136,6 +196,8 @@ services:
       - core
       - simulator
       - docs
+      - sve
+      - realtime
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -179,6 +241,7 @@ volumes:
   uploads:
   simulations:
   reports:
+  huggingface_cache:
 
 networks:
   default:

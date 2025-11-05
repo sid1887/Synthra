@@ -14,7 +14,8 @@ Synthra is a web-first ECAD/EDA platform that transforms circuit images into liv
 - ⚙️ **Synthesis**: Auto-generate SPICE netlists and Verilog/SystemVerilog
 - 📊 **Simulation**: Analog (ngspice) and digital (Verilator) simulation
 - 📜 **Documentation**: Publication-quality PDF generation with AI narratives
-- 🎨 **Studio**: Interactive web-based schematic editor
+- 🎨 **SVE (Synthra Vector Engine)**: Autonomous AI-powered component symbol generation using SDXL-Turbo
+- 🖥️ **Studio**: Interactive web-based schematic editor
 
 ## Architecture
 
@@ -25,6 +26,7 @@ synthra/
 │   ├── core/            # Netlist & HDL generation
 │   ├── simulator/       # ngspice, Verilator integration
 │   ├── docs/            # PDF generator (LaTeX + Jinja2)
+│   ├── sve/             # 🎨 AI-powered component symbol generation (SDXL-Turbo)
 │   └── api/             # FastAPI gateway
 ├── frontend/            # React + SVG editor
 ├── models/              # ML model weights & training
@@ -50,9 +52,11 @@ docker-compose up --build
 ```
 
 Access:
-- Frontend: http://localhost:3000
-- API: http://localhost:8000
-- Docs: http://localhost:8000/docs
+
+- Frontend: <http://localhost:3000>
+- API Gateway: <http://localhost:8000>
+- API Docs: <http://localhost:8000/docs>
+- SVE Service (AI): <http://localhost:8005>
 
 ## Development Roadmap
 

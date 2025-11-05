@@ -149,6 +149,31 @@ CREATE TABLE IF NOT EXISTS component_library (
     UNIQUE(component_type, symbol_name)
 );
 
+-- SVE Components table - AI-generated component symbols
+CREATE TABLE IF NOT EXISTS components (
+    id SERIAL PRIMARY KEY,
+    component_type VARCHAR(100) UNIQUE NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    
+    -- SVG content and metadata
+    svg_content TEXT NOT NULL,
+    svg_hash VARCHAR(64) NOT NULL,
+    
+    -- Component properties
+    pins INTEGER,
+    metadata JSONB DEFAULT '{}',
+    style VARCHAR(50) DEFAULT 'IEEE',
+    
+    -- AI generation tracking
+    generation_prompt TEXT,
+    quality_score FLOAT DEFAULT 0.0,
+    usage_count INTEGER DEFAULT 0,
+    
+    -- Timestamps
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Training data table - for active learning
 CREATE TABLE IF NOT EXISTS training_data (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -171,6 +196,11 @@ CREATE INDEX idx_jobs_circuit ON jobs(circuit_id);
 CREATE INDEX idx_simulations_circuit ON simulations(circuit_id);
 CREATE INDEX idx_artifacts_circuit ON artifacts(circuit_id);
 CREATE INDEX idx_component_library_type ON component_library(component_type);
+
+-- SVE components indexes
+CREATE INDEX idx_components_type ON components(component_type);
+CREATE INDEX idx_components_category ON components(category);
+CREATE INDEX idx_components_usage ON components(usage_count DESC);
 
 -- GIN indexes for JSONB queries
 CREATE INDEX idx_circuits_components ON circuits USING GIN (components);

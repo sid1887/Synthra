@@ -37,16 +37,46 @@ async def health_check():
 @app.post("/api/generate", response_model=ReportResult)
 async def generate_pdf(request: GeneratePDFRequest):
     """Generate publication-quality PDF report"""
-    # TODO: Implement PDF generation with LaTeX
-    # See detailed implementation in next phase
+    try:
+        from pdf_generator import generate_pdf as gen_pdf
+        import tempfile
+        from pathlib import Path
+        
+        # Generate PDF
+        pdf_bytes = gen_pdf(
+            title=request.title,
+            components=request.components,
+            netlist=request.netlist,
+            schematic_svg=request.schematic_path if hasattr(request, 'schematic_path') else None,
+            hdl_content=request.hdl_code if hasattr(request, 'hdl_code') else None,
+            waveforms=request.waveforms if hasattr(request, 'waveforms') else None,
+            summary=request.summary if hasattr(request, 'summary') else None,
+            analysis=request.analysis if hasattr(request, 'analysis') else None,
+            metadata=request.metadata if hasattr(request, 'metadata') else None
+        )
+        
+        # Save PDF to temp file
+        # In production, save to persistent storage or cloud
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp:
+            tmp.write(pdf_bytes)
+            pdf_path = tmp.name
+        
+        return ReportResult(
+            job_id="pdf_" + str(id(request)),
+            pdf_path=pdf_path,
+            file_size_bytes=len(pdf_bytes),
+            success=True,
+            compilation_logs="PDF generated successfully"
+        )
     
-    return ReportResult(
-        job_id="pdf_" + str(id(request)),
-        pdf_path="/reports/placeholder.pdf",
-        file_size_bytes=0,
-        success=False,
-        compilation_logs="PDF generation not implemented yet"
-    )
+    except Exception as e:
+        return ReportResult(
+            job_id="pdf_" + str(id(request)),
+            pdf_path="",
+            file_size_bytes=0,
+            success=False,
+            compilation_logs=f"PDF generation failed: {str(e)}"
+        )
 
 
 if __name__ == "__main__":

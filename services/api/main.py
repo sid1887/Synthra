@@ -22,6 +22,16 @@ from schemas import (
     HealthCheckResponse
 )
 
+# Import Redis job store and Celery tasks
+from redis_store import get_redis_store
+from tasks import (
+    process_image,
+    generate_netlist,
+    run_simulation,
+    generate_pdf,
+    generate_component_symbol
+)
+
 app = FastAPI(
     title="Synthra API Gateway",
     version="1.0.0",
@@ -42,9 +52,32 @@ VISION_SERVICE = os.getenv("VISION_SERVICE_URL", "http://vision:8000")
 CORE_SERVICE = os.getenv("CORE_SERVICE_URL", "http://core:8000")
 SIMULATOR_SERVICE = os.getenv("SIMULATOR_SERVICE_URL", "http://simulator:8000")
 DOCS_SERVICE = os.getenv("DOCS_SERVICE_URL", "http://docs:8000")
+SVE_SERVICE = os.getenv("SVE_SERVICE_URL", "http://sve:8000")
 
-# In-memory job store (replace with Redis/DB in production)
+# Use Redis for job storage
+USE_REDIS = os.getenv("USE_REDIS", "false").lower() == "true"
+redis_store = None
+
+# Fallback in-memory store for development
 jobs_store: Dict[str, Dict[str, Any]] = {}
+
+
+@app.on_event("startup")
+async def startup():
+    """Initialize Redis connection if enabled"""
+    global redis_store
+    if USE_REDIS:
+        try:
+            redis_store = get_redis_store()
+            print("✅ Redis job store initialized")
+        except Exception as e:
+            print(f"⚠️ Redis connection failed, using in-memory store: {e}")
+            redis_store = None
+
+
+def get_job_store():
+    """Get active job store (Redis or in-memory fallback)"""
+    return redis_store if USE_REDIS and redis_store else None
 
 
 @app.get("/health", response_model=HealthCheckResponse)
@@ -60,20 +93,48 @@ async def health_check():
 @app.post("/api/upload-image", response_model=UploadImageResponse)
 async def upload_image(
     file: UploadFile = File(...),
-    background_tasks: BackgroundTasks = None
+    background_tasks: BackgroundTasks = None,
+    use_async: bool = False
 ):
     """
     Upload schematic image and start detection pipeline
     
     Flow:
-    1. Forward image to Vision service for detection
-    2. Store job info
+    1. Forward image to Vision service for detection (or dispatch to Celery)
+    2. Store job info in Redis or memory
     3. Return job ID for status polling
     """
     job_id = str(uuid.uuid4())
+    store = get_job_store()
     
     try:
-        # Forward to Vision service
+        # Create job entry
+        job_data = {
+            "job_id": job_id,
+            "type": "detection",
+            "filename": file.filename
+        }
+        
+        if store:
+            store.create_job(job_id, job_data)
+        else:
+            jobs_store[job_id] = {**job_data, "status": JobStatus.PENDING, "created_at": datetime.utcnow().isoformat()}
+        
+        # Async processing with Celery (optional)
+        if use_async and USE_REDIS:
+            image_data = await file.read()
+            task = process_image.apply_async(
+                args=[image_data, file.filename],
+                task_id=job_id
+            )
+            
+            return UploadImageResponse(
+                job_id=job_id,
+                status=JobStatus.PENDING,
+                message="Image processing started"
+            )
+        
+        # Synchronous processing (default)
         async with httpx.AsyncClient(timeout=60.0) as client:
             files = {"file": (file.filename, await file.read(), file.content_type)}
             response = await client.post(
@@ -83,14 +144,14 @@ async def upload_image(
             response.raise_for_status()
             detection_result = response.json()
         
-        # Store job
-        jobs_store[job_id] = {
-            "job_id": job_id,
-            "status": JobStatus.COMPLETED,
-            "type": "detection",
-            "result": detection_result,
-            "created_at": datetime.utcnow().isoformat()
-        }
+        # Update job with result
+        if store:
+            store.set_status(job_id, JobStatus.COMPLETED, result=detection_result)
+        else:
+            jobs_store[job_id].update({
+                "status": JobStatus.COMPLETED,
+                "result": detection_result
+            })
         
         return UploadImageResponse(
             job_id=job_id,
@@ -99,7 +160,13 @@ async def upload_image(
         )
         
     except httpx.HTTPError as e:
-        raise HTTPException(status_code=500, detail=f"Vision service error: {str(e)}")
+        error_msg = f"Vision service error: {str(e)}"
+        if store:
+            store.set_status(job_id, JobStatus.FAILED, error=error_msg)
+        elif job_id in jobs_store:
+            jobs_store[job_id]["status"] = JobStatus.FAILED
+            jobs_store[job_id]["error"] = error_msg
+        raise HTTPException(status_code=500, detail=error_msg)
 
 
 @app.get("/api/result/{job_id}", response_model=JobStatusResponse)
@@ -107,10 +174,16 @@ async def get_result(job_id: str):
     """
     Get job status and results
     """
-    if job_id not in jobs_store:
-        raise HTTPException(status_code=404, detail="Job not found")
+    store = get_job_store()
     
-    job = jobs_store[job_id]
+    if store:
+        job = store.get_job(job_id)
+        if not job:
+            raise HTTPException(status_code=404, detail="Job not found")
+    else:
+        if job_id not in jobs_store:
+            raise HTTPException(status_code=404, detail="Job not found")
+        job = jobs_store[job_id]
     
     return JobStatusResponse(
         job_id=job_id,
@@ -118,7 +191,7 @@ async def get_result(job_id: str):
         result=job.get("result"),
         error_message=job.get("error"),
         created_at=datetime.fromisoformat(job["created_at"]),
-        completed_at=datetime.fromisoformat(job["created_at"])  # Same for now
+        completed_at=datetime.fromisoformat(job.get("completed_at", job["created_at"]))
     )
 
 
@@ -222,7 +295,8 @@ async def services_status():
         "vision": VISION_SERVICE,
         "core": CORE_SERVICE,
         "simulator": SIMULATOR_SERVICE,
-        "docs": DOCS_SERVICE
+        "docs": DOCS_SERVICE,
+        "sve": SVE_SERVICE
     }
     
     status = {}
@@ -236,6 +310,104 @@ async def services_status():
                 status[name] = {"status": "unhealthy"}
     
     return status
+
+
+# ============================================================================
+# SVE (Synthra Vector Engine) Endpoints
+# ============================================================================
+
+@app.post("/api/sve/component/{component_type}")
+async def get_or_generate_component(
+    component_type: str,
+    category: str = "passive",
+    force_regenerate: bool = False
+):
+    """
+    Get or generate a component symbol using SVE
+    Autonomous generation - checks DB first, generates if missing
+    """
+    async with httpx.AsyncClient(timeout=60.0) as client:
+        try:
+            response = await client.post(
+                f"{SVE_SERVICE}/api/generate",
+                json={
+                    "component_type": component_type,
+                    "category": category,
+                    "force_regenerate": force_regenerate
+                }
+            )
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPError as e:
+            raise HTTPException(status_code=500, detail=f"SVE service error: {str(e)}")
+
+
+@app.get("/api/sve/component/{component_type}")
+async def get_component(component_type: str):
+    """Get existing component from database"""
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        try:
+            response = await client.get(f"{SVE_SERVICE}/api/component/{component_type}")
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 404:
+                raise HTTPException(status_code=404, detail=f"Component '{component_type}' not found")
+            raise HTTPException(status_code=500, detail=f"SVE service error: {str(e)}")
+
+
+@app.get("/api/sve/components/search")
+async def search_components(query: str = "", category: Optional[str] = None, limit: int = 20):
+    """Search components in database"""
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        try:
+            response = await client.get(
+                f"{SVE_SERVICE}/api/components/search",
+                params={"query": query, "category": category, "limit": limit}
+            )
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPError as e:
+            raise HTTPException(status_code=500, detail=f"SVE service error: {str(e)}")
+
+
+@app.get("/api/sve/components/popular")
+async def get_popular_components(limit: int = 10):
+    """Get most used components"""
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        try:
+            response = await client.get(
+                f"{SVE_SERVICE}/api/components/popular",
+                params={"limit": limit}
+            )
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPError as e:
+            raise HTTPException(status_code=500, detail=f"SVE service error: {str(e)}")
+
+
+@app.post("/api/sve/seed")
+async def seed_components(background_tasks: BackgroundTasks):
+    """Trigger database seeding with initial component library"""
+    async with httpx.AsyncClient(timeout=5.0) as client:
+        try:
+            response = await client.post(f"{SVE_SERVICE}/api/seed")
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPError as e:
+            raise HTTPException(status_code=500, detail=f"SVE service error: {str(e)}")
+
+
+@app.get("/api/sve/stats")
+async def get_sve_stats():
+    """Get SVE database statistics"""
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        try:
+            response = await client.get(f"{SVE_SERVICE}/api/stats")
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPError as e:
+            raise HTTPException(status_code=500, detail=f"SVE service error: {str(e)}")
 
 
 if __name__ == "__main__":
