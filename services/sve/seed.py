@@ -1,222 +1,333 @@
+#!/usr/bin/env python3
 """
-Database seeding script for Synthra Vector Engine
-Generates initial 100+ component library using AI
+Seed script for component library
+Generates SVG symbols and stores them in the database
+Run: python seed.py
 """
 
-import asyncio
+import psycopg2
+from psycopg2.extras import Json
+import json
 import sys
+import os
 from pathlib import Path
 
-# Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+# Add SVE to path
+sys.path.insert(0, str(Path(__file__).parent))
 
-from services.sve.generator import SVECore
-from services.sve.component_library import COMPONENT_LIBRARY
+from symbol_generator import SymbolGenerator
 
+def get_db_connection(db_url=None):
+    """Get PostgreSQL connection"""
+    if not db_url:
+        db_url = os.getenv(
+            "DATABASE_URL",
+            "postgresql://synthra:synthra@postgres:5432/synthra_db"
+        )
 
-async def seed_database():
-    """Seed the database with initial component library"""
-    
-    print("🌱 Initializing Synthra Vector Engine for seeding...")
-    
-    # Initialize SVE Core
-    sve = SVECore()
-    await sve.initialize()
-    
-    print(f"📦 Preparing to generate {len(COMPONENT_LIBRARY)} components\n")
-    
-    # Statistics
-    total = len(COMPONENT_LIBRARY)
-    successful = 0
-    failed = 0
-    skipped = 0
-    
-    # Process each component
-    for idx, component in enumerate(COMPONENT_LIBRARY, 1):
-        comp_type = component['type']
-        category = component['category']
-        
-        print(f"[{idx}/{total}] Processing: {comp_type} ({category})")
-        
-        try:
-            # Check if already exists
-            existing = await sve.db.get_component(comp_type)
-            if existing:
-                print(f"  ⏭️  Already exists, skipping...")
-                skipped += 1
-                continue
-            
-            # Build generation kwargs
-            kwargs = {
-                'category': category,
-                'pins': component.get('pins'),
-                'style': component.get('style', 'IEEE'),
-            }
-            
-            # Add additional details to prompt
-            if 'details' in component:
-                kwargs['additional_prompt'] = component['details']
-            
-            # Generate the component
-            result = await sve.get_or_generate_component(
-                comp_type,
-                force_regenerate=False,
-                **kwargs
-            )
-            
-            if result and result.get('status') == 'success':
-                print(f"  ✅ Generated successfully")
-                successful += 1
-            else:
-                print(f"  ❌ Generation failed: {result.get('error', 'Unknown error')}")
-                failed += 1
-                
-        except Exception as e:
-            print(f"  ❌ Error: {str(e)}")
-            failed += 1
-        
-        print()  # Blank line between components
-    
-    # Print summary
-    print("\n" + "="*60)
-    print("📊 Seeding Summary")
-    print("="*60)
-    print(f"Total components:  {total}")
-    print(f"✅ Successfully generated: {successful}")
-    print(f"⏭️  Skipped (already exist): {skipped}")
-    print(f"❌ Failed:                  {failed}")
-    print(f"Success rate: {successful / (total - skipped) * 100 if (total - skipped) > 0 else 0:.1f}%")
-    print("="*60)
-    
-    # Get final stats
-    stats = await sve.db.get_stats()
-    print(f"\n📈 Database Statistics:")
-    print(f"Total components: {stats['total_components']}")
-    print(f"Categories: {stats['categories']}")
-    print(f"Most popular: {stats['most_popular']}")
-    
-    # Cleanup
-    await sve.cleanup()
-    print("\n✨ Seeding complete!")
+    try:
+        conn = psycopg2.connect(db_url)
+        print(f"✅ Connected to database")
+        return conn
+    except Exception as e:
+        print(f"❌ Database connection failed: {e}")
+        print("   Note: Database seeding requires PostgreSQL running")
+        print("   For development, components can be seeded on first API call")
+        raise
 
+def define_components():
+    """Define all Phase 1 components"""
+    return [
+        {
+            'component_type': 'resistor',
+            'symbol_name': 'R',
+            'category': 'passive',
+            'description': '2-terminal resistor',
+            'pins': [
+                {'name': 'p', 'direction': 'inout'},
+                {'name': 'n', 'direction': 'inout'},
+            ],
+            'spice_template': 'R{label} {p} {n} {value}',
+            'vhdl_template': 'R <= {value};',
+        },
+        {
+            'component_type': 'capacitor',
+            'symbol_name': 'C',
+            'category': 'passive',
+            'description': '2-terminal capacitor',
+            'pins': [
+                {'name': 'p', 'direction': 'inout'},
+                {'name': 'n', 'direction': 'inout'},
+            ],
+            'spice_template': 'C{label} {p} {n} {value}',
+            'vhdl_template': 'C <= {value};',
+        },
+        {
+            'component_type': 'inductor',
+            'symbol_name': 'L',
+            'category': 'passive',
+            'description': '2-terminal inductor',
+            'pins': [
+                {'name': 'p', 'direction': 'inout'},
+                {'name': 'n', 'direction': 'inout'},
+            ],
+            'spice_template': 'L{label} {p} {n} {value}',
+            'vhdl_template': 'L <= {value};',
+        },
+        {
+            'component_type': 'and_gate',
+            'symbol_name': 'AND2',
+            'category': 'logic',
+            'description': '2-input AND gate',
+            'pins': [
+                {'name': 'A', 'direction': 'input'},
+                {'name': 'B', 'direction': 'input'},
+                {'name': 'Y', 'direction': 'output'},
+            ],
+            'spice_template': 'U{label} {A} {B} {Y} AND2',
+            'vhdl_template': 'Y <= A and B;',
+        },
+        {
+            'component_type': 'or_gate',
+            'symbol_name': 'OR2',
+            'category': 'logic',
+            'description': '2-input OR gate',
+            'pins': [
+                {'name': 'A', 'direction': 'input'},
+                {'name': 'B', 'direction': 'input'},
+                {'name': 'Y', 'direction': 'output'},
+            ],
+            'spice_template': 'U{label} {A} {B} {Y} OR2',
+            'vhdl_template': 'Y <= A or B;',
+        },
+        {
+            'component_type': 'not_gate',
+            'symbol_name': 'NOT',
+            'category': 'logic',
+            'description': 'NOT gate (inverter)',
+            'pins': [
+                {'name': 'A', 'direction': 'input'},
+                {'name': 'Y', 'direction': 'output'},
+            ],
+            'spice_template': 'U{label} {A} {Y} NOT',
+            'vhdl_template': 'Y <= not A;',
+        },
+        {
+            'component_type': 'nand_gate',
+            'symbol_name': 'NAND2',
+            'category': 'logic',
+            'description': '2-input NAND gate',
+            'pins': [
+                {'name': 'A', 'direction': 'input'},
+                {'name': 'B', 'direction': 'input'},
+                {'name': 'Y', 'direction': 'output'},
+            ],
+            'spice_template': 'U{label} {A} {B} {Y} NAND2',
+            'vhdl_template': 'Y <= not(A and B);',
+        },
+        {
+            'component_type': 'nor_gate',
+            'symbol_name': 'NOR2',
+            'category': 'logic',
+            'description': '2-input NOR gate',
+            'pins': [
+                {'name': 'A', 'direction': 'input'},
+                {'name': 'B', 'direction': 'input'},
+                {'name': 'Y', 'direction': 'output'},
+            ],
+            'spice_template': 'U{label} {A} {B} {Y} NOR2',
+            'vhdl_template': 'Y <= not(A or B);',
+        },
+        {
+            'component_type': 'xor_gate',
+            'symbol_name': 'XOR2',
+            'category': 'logic',
+            'description': '2-input XOR gate',
+            'pins': [
+                {'name': 'A', 'direction': 'input'},
+                {'name': 'B', 'direction': 'input'},
+                {'name': 'Y', 'direction': 'output'},
+            ],
+            'spice_template': 'U{label} {A} {B} {Y} XOR2',
+            'vhdl_template': 'Y <= A xor B;',
+        },
+        {
+            'component_type': 'voltage_source',
+            'symbol_name': 'V',
+            'category': 'power',
+            'description': 'Voltage source',
+            'pins': [
+                {'name': 'pos', 'direction': 'output'},
+                {'name': 'neg', 'direction': 'output'},
+            ],
+            'spice_template': 'V{label} {pos} {neg} {value}',
+            'vhdl_template': 'V <= {value};',
+        },
+        {
+            'component_type': 'current_source',
+            'symbol_name': 'I',
+            'category': 'power',
+            'description': 'Current source',
+            'pins': [
+                {'name': 'pos', 'direction': 'output'},
+                {'name': 'neg', 'direction': 'output'},
+            ],
+            'spice_template': 'I{label} {pos} {neg} {value}',
+            'vhdl_template': 'I <= {value};',
+        },
+        {
+            'component_type': 'diode',
+            'symbol_name': 'D',
+            'category': 'active',
+            'description': 'Diode',
+            'pins': [
+                {'name': 'anode', 'direction': 'inout'},
+                {'name': 'cathode', 'direction': 'inout'},
+            ],
+            'spice_template': 'D{label} {anode} {cathode} 1N4148',
+            'vhdl_template': 'Y <= A;',
+        },
+        {
+            'component_type': 'bjt_npn',
+            'symbol_name': 'Q',
+            'category': 'active',
+            'description': 'NPN Transistor',
+            'pins': [
+                {'name': 'collector', 'direction': 'inout'},
+                {'name': 'base', 'direction': 'inout'},
+                {'name': 'emitter', 'direction': 'inout'},
+            ],
+            'spice_template': 'Q{label} {collector} {base} {emitter} 2N2222',
+            'vhdl_template': 'Y <= A and B;',
+        },
+        {
+            'component_type': 'opamp',
+            'symbol_name': 'U',
+            'category': 'active',
+            'description': 'Operational Amplifier',
+            'pins': [
+                {'name': 'in_pos', 'direction': 'input'},
+                {'name': 'in_neg', 'direction': 'input'},
+                {'name': 'vcc', 'direction': 'input'},
+                {'name': 'vee', 'direction': 'input'},
+                {'name': 'out', 'direction': 'output'},
+            ],
+            'spice_template': 'U{label} {in_pos} {in_neg} {vcc} {vee} {out} LM358',
+            'vhdl_template': 'Y <= (A - B) * gain;',
+        },
+        {
+            'component_type': 'ground',
+            'symbol_name': 'GND',
+            'category': 'power',
+            'description': 'Ground reference',
+            'pins': [
+                {'name': 'gnd', 'direction': 'inout'},
+            ],
+            'spice_template': '',
+            'vhdl_template': '',
+        },
+    ]
 
-async def reseed_component(component_type: str):
-    """Regenerate a specific component"""
-    
-    print(f"🔄 Regenerating component: {component_type}")
-    
-    sve = SVECore()
-    await sve.initialize()
-    
-    # Find component in library
-    component = next((c for c in COMPONENT_LIBRARY if c['type'] == component_type), None)
-    
-    if not component:
-        print(f"❌ Component '{component_type}' not found in library")
-        await sve.cleanup()
+def seed_components():
+    """Generate SVG for all components and insert into database"""
+    try:
+        conn = get_db_connection()
+    except:
+        print("\n⚠️  Database not available - skipping seed")
+        print("    Components will be generated on-demand when API is called")
         return
-    
-    # Delete existing if present
-    await sve.db.delete_component(component_type)
-    
-    # Generate fresh
-    kwargs = {
-        'category': component['category'],
-        'pins': component.get('pins'),
-        'style': component.get('style', 'IEEE'),
-    }
-    
-    if 'details' in component:
-        kwargs['additional_prompt'] = component['details']
-    
-    result = await sve.get_or_generate_component(
-        component_type,
-        force_regenerate=True,
-        **kwargs
-    )
-    
-    if result and result.get('status') == 'success':
-        print(f"✅ Successfully regenerated {component_type}")
-    else:
-        print(f"❌ Failed to regenerate: {result.get('error', 'Unknown error')}")
-    
-    await sve.cleanup()
 
+    generator = SymbolGenerator()
+    components = define_components()
+    inserted = 0
+    updated = 0
 
-async def list_components():
-    """List all components in database"""
-    
-    sve = SVECore()
-    await sve.initialize()
-    
-    stats = await sve.db.get_stats()
-    
-    print("\n📊 Component Database")
-    print("="*60)
-    print(f"Total: {stats['total_components']} components")
-    print(f"Categories: {len(stats['categories'])}")
-    print("\nBreakdown by category:")
-    
-    for category, count in stats['categories'].items():
-        print(f"  {category:20s}: {count:3d} components")
-    
-    print("\n🔥 Most Popular Components:")
-    for comp in stats['most_popular'][:10]:
-        print(f"  {comp['component_type']:30s} (used {comp['usage_count']} times)")
-    
-    await sve.cleanup()
+    try:
+        with conn.cursor() as cur:
+            for comp in components:
+                print(f"\n📦 Processing {comp['symbol_name']} ({comp['category']})...")
 
+                # Generate SVG
+                try:
+                    svg, pins = generator.generate_symbol({
+                        'symbol_name': comp['symbol_name'],
+                        'category': comp['category'],
+                        'pins': comp['pins'],
+                        'description': comp['description'],
+                    })
 
-async def clear_database():
-    """Clear all components (use with caution!)"""
-    
-    response = input("⚠️  Are you sure you want to delete ALL components? (yes/no): ")
-    if response.lower() != 'yes':
-        print("Cancelled.")
-        return
-    
-    sve = SVECore()
-    await sve.initialize()
-    
-    # Get all components
-    async with sve.db.pool.acquire() as conn:
-        components = await conn.fetch("SELECT component_type FROM components")
-        
-        print(f"Deleting {len(components)} components...")
-        
-        for comp in components:
-            await sve.db.delete_component(comp['component_type'])
-        
-        print(f"✅ Deleted {len(components)} components")
-    
-    await sve.cleanup()
+                    print(f"  ✓ Generated SVG ({len(svg)} bytes)")
+                    print(f"  ✓ Extracted {len(pins)} pins")
 
+                    # Check if component exists
+                    cur.execute(
+                        "SELECT id FROM component_library WHERE component_type = %s AND symbol_name = %s",
+                        (comp['component_type'], comp['symbol_name'])
+                    )
+                    existing = cur.fetchone()
+
+                    if existing:
+                        # Update existing
+                        cur.execute(
+                            """
+                            UPDATE component_library
+                            SET svg_symbol = %s,
+                                pin_definitions = %s,
+                                description = %s,
+                                spice_template = %s,
+                                vhdl_template = %s
+                            WHERE component_type = %s AND symbol_name = %s
+                            """,
+                            (
+                                svg,
+                                Json(pins),
+                                comp['description'],
+                                comp.get('spice_template'),
+                                comp.get('vhdl_template'),
+                                comp['component_type'],
+                                comp['symbol_name'],
+                            )
+                        )
+                        updated += 1
+                        print(f"  ✓ Updated in database")
+                    else:
+                        # Insert new
+                        cur.execute(
+                            """
+                            INSERT INTO component_library
+                            (component_type, symbol_name, category, description,
+                             svg_symbol, pin_definitions, spice_template, vhdl_template)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                            """,
+                            (
+                                comp['component_type'],
+                                comp['symbol_name'],
+                                comp['category'],
+                                comp['description'],
+                                svg,
+                                Json(pins),
+                                comp.get('spice_template'),
+                                comp.get('vhdl_template'),
+                            )
+                        )
+                        inserted += 1
+                        print(f"  ✓ Inserted into database")
+
+                except Exception as e:
+                    print(f"  ❌ Error processing {comp['symbol_name']}: {e}")
+                    continue
+
+        conn.commit()
+        print(f"\n✅ Seeding complete: {inserted} inserted, {updated} updated")
+
+    except Exception as e:
+        print(f"❌ Error during seeding: {e}")
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
 
 if __name__ == "__main__":
-    import sys
-    
-    if len(sys.argv) < 2:
-        # Default: full seed
-        asyncio.run(seed_database())
-    else:
-        command = sys.argv[1]
-        
-        if command == "reseed" and len(sys.argv) == 3:
-            # Reseed specific component
-            component_type = sys.argv[2]
-            asyncio.run(reseed_component(component_type))
-        
-        elif command == "list":
-            # List all components
-            asyncio.run(list_components())
-        
-        elif command == "clear":
-            # Clear database
-            asyncio.run(clear_database())
-        
-        else:
-            print("Usage:")
-            print("  python seed.py              - Seed database with all components")
-            print("  python seed.py reseed <type> - Regenerate specific component")
-            print("  python seed.py list          - List all components")
-            print("  python seed.py clear         - Clear all components (careful!)")
+    print("🌱 Synthra Component Library Seeding Script")
+    print("=" * 50)
+    seed_components()

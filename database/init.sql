@@ -30,22 +30,22 @@ CREATE TABLE IF NOT EXISTS circuits (
     project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     version INTEGER DEFAULT 1,
-    
+
     -- Circuit topology (JSONB for flexibility)
     components JSONB NOT NULL DEFAULT '[]',
     nodes JSONB NOT NULL DEFAULT '[]',
     metadata JSONB DEFAULT '{}',
-    
+
     -- Generated artifacts
     netlist TEXT,
     verilog TEXT,
     testbench TEXT,
     svg_schematic TEXT,
-    
+
     -- State tracking
     status VARCHAR(50) DEFAULT 'draft',
     confidence_score FLOAT,
-    
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -55,14 +55,14 @@ CREATE TABLE IF NOT EXISTS jobs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     circuit_id UUID REFERENCES circuits(id) ON DELETE CASCADE,
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    
+
     job_type VARCHAR(50) NOT NULL, -- 'detection', 'simulation', 'pdf_generation'
     status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'running', 'completed', 'failed'
-    
+
     input_data JSONB,
     output_data JSONB,
     error_message TEXT,
-    
+
     started_at TIMESTAMP,
     completed_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -73,19 +73,19 @@ CREATE TABLE IF NOT EXISTS simulations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     circuit_id UUID REFERENCES circuits(id) ON DELETE CASCADE,
     job_id UUID REFERENCES jobs(id) ON DELETE CASCADE,
-    
+
     simulator VARCHAR(50) NOT NULL, -- 'ngspice', 'verilator', 'icarus'
     simulation_type VARCHAR(50), -- 'transient', 'dc', 'ac', 'digital'
-    
+
     parameters JSONB,
     waveform_data JSONB,
     csv_path TEXT,
     vcd_path TEXT,
     logs TEXT,
-    
+
     success BOOLEAN DEFAULT false,
     runtime_ms INTEGER,
-    
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -95,14 +95,14 @@ CREATE TABLE IF NOT EXISTS reports (
     circuit_id UUID REFERENCES circuits(id) ON DELETE CASCADE,
     simulation_id UUID REFERENCES simulations(id) ON DELETE SET NULL,
     job_id UUID REFERENCES jobs(id) ON DELETE CASCADE,
-    
+
     report_type VARCHAR(50), -- 'lab_report', 'research_doc', 'design_brief'
     template VARCHAR(50),
-    
+
     prompt TEXT,
     narrative TEXT,
     pdf_path TEXT,
-    
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -111,41 +111,47 @@ CREATE TABLE IF NOT EXISTS artifacts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     circuit_id UUID REFERENCES circuits(id) ON DELETE CASCADE,
     job_id UUID REFERENCES jobs(id) ON DELETE CASCADE,
-    
+
     artifact_type VARCHAR(50) NOT NULL, -- 'image', 'netlist', 'svg', 'pdf', 'vcd'
     file_path TEXT NOT NULL,
     file_size BIGINT,
     mime_type VARCHAR(100),
-    
+
     metadata JSONB,
-    
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Component library table - reusable component definitions
 CREATE TABLE IF NOT EXISTS component_library (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    
+
     component_type VARCHAR(100) NOT NULL,
     symbol_name VARCHAR(100) NOT NULL,
-    category VARCHAR(50), -- 'passive', 'active', 'digital', 'power'
-    
+    category VARCHAR(50), -- 'passive', 'active', 'digital', 'power', 'logic'
+    description TEXT,
+
     -- Visual representation
-    svg_symbol TEXT,
-    pin_definitions JSONB, -- [{"id": "1", "name": "anode", "position": [0, 0]}]
-    
+    svg_symbol TEXT, -- Complete SVG as text
+    pin_definitions JSONB, -- [{"name": "A", "x": 0, "y": 10, "direction": "input"}]
+
     -- Electrical models
     spice_model TEXT,
+    spice_template TEXT,
     verilog_template TEXT,
-    
+    vhdl_template TEXT,
+
+    -- Parameters (default values)
+    parameters JSONB DEFAULT '{}', -- {"resistance": "1k", "tolerance": "5%"}
+
     -- Metadata
     manufacturer VARCHAR(255),
     datasheet_url TEXT,
     footprint VARCHAR(100),
-    
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     UNIQUE(component_type, symbol_name)
 );
 
@@ -154,21 +160,21 @@ CREATE TABLE IF NOT EXISTS components (
     id SERIAL PRIMARY KEY,
     component_type VARCHAR(100) UNIQUE NOT NULL,
     category VARCHAR(50) NOT NULL,
-    
+
     -- SVG content and metadata
     svg_content TEXT NOT NULL,
     svg_hash VARCHAR(64) NOT NULL,
-    
+
     -- Component properties
     pins INTEGER,
     metadata JSONB DEFAULT '{}',
     style VARCHAR(50) DEFAULT 'IEEE',
-    
+
     -- AI generation tracking
     generation_prompt TEXT,
     quality_score FLOAT DEFAULT 0.0,
     usage_count INTEGER DEFAULT 0,
-    
+
     -- Timestamps
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -177,14 +183,14 @@ CREATE TABLE IF NOT EXISTS components (
 -- Training data table - for active learning
 CREATE TABLE IF NOT EXISTS training_data (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    
+
     image_path TEXT NOT NULL,
     annotations JSONB NOT NULL, -- COCO/YOLO format
-    
+
     source VARCHAR(50), -- 'user_correction', 'manual', 'synthetic'
     quality_score FLOAT,
     verified BOOLEAN DEFAULT false,
-    
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -226,17 +232,22 @@ CREATE TRIGGER update_circuits_updated_at BEFORE UPDATE ON circuits FOR EACH ROW
 CREATE TRIGGER update_component_library_updated_at BEFORE UPDATE ON component_library FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Insert default admin user
-INSERT INTO users (id, username, email) 
+INSERT INTO users (id, username, email)
 VALUES ('00000000-0000-0000-0000-000000000001', 'admin', 'admin@synthra.local')
 ON CONFLICT (username) DO NOTHING;
 
--- Insert some basic components to the library
-INSERT INTO component_library (component_type, symbol_name, category, pin_definitions) VALUES
-('resistor', 'R', 'passive', '[{"id": "1", "name": "p", "position": [0, 0]}, {"id": "2", "name": "n", "position": [10, 0]}]'),
-('capacitor', 'C', 'passive', '[{"id": "1", "name": "p", "position": [0, 0]}, {"id": "2", "name": "n", "position": [10, 0]}]'),
-('inductor', 'L', 'passive', '[{"id": "1", "name": "p", "position": [0, 0]}, {"id": "2", "name": "n", "position": [10, 0]}]'),
-('diode', 'D', 'active', '[{"id": "1", "name": "anode", "position": [0, 0]}, {"id": "2", "name": "cathode", "position": [10, 0]}]'),
-('npn', 'Q', 'active', '[{"id": "1", "name": "collector", "position": [5, 0]}, {"id": "2", "name": "base", "position": [0, 5]}, {"id": "3", "name": "emitter", "position": [5, 10]}]'),
-('voltage_source', 'V', 'power', '[{"id": "1", "name": "pos", "position": [0, 0]}, {"id": "2", "name": "neg", "position": [0, 10]}]'),
-('ground', 'GND', 'power', '[{"id": "1", "name": "gnd", "position": [0, 0]}]')
+-- Insert some basic components to the library (Phase 1 components)
+INSERT INTO component_library (component_type, symbol_name, category, description, pin_definitions, spice_template, vhdl_template) VALUES
+('resistor', 'R', 'passive', '2-terminal resistor', '[{"name": "p", "x": 0, "y": 10, "direction": "inout"}, {"name": "n", "x": 60, "y": 10, "direction": "inout"}]', 'R{label} {pin1} {pin2} {value}', 'R <= {value};'),
+('capacitor', 'C', 'passive', '2-terminal capacitor', '[{"name": "p", "x": 0, "y": 10, "direction": "inout"}, {"name": "n", "x": 60, "y": 10, "direction": "inout"}]', 'C{label} {pin1} {pin2} {value}', 'C <= {value};'),
+('inductor', 'L', 'passive', '2-terminal inductor', '[{"name": "p", "x": 0, "y": 10, "direction": "inout"}, {"name": "n", "x": 60, "y": 10, "direction": "inout"}]', 'L{label} {pin1} {pin2} {value}', 'L <= {value};'),
+('and_gate', 'AND2', 'logic', '2-input AND gate', '[{"name": "A", "x": 0, "y": 10, "direction": "input"}, {"name": "B", "x": 0, "y": 30, "direction": "input"}, {"name": "Y", "x": 60, "y": 20, "direction": "output"}]', 'U{label} {pinA} {pinB} {pinY} AND2', 'Y <= A and B;'),
+('or_gate', 'OR2', 'logic', '2-input OR gate', '[{"name": "A", "x": 0, "y": 10, "direction": "input"}, {"name": "B", "x": 0, "y": 30, "direction": "input"}, {"name": "Y", "x": 60, "y": 20, "direction": "output"}]', 'U{label} {pinA} {pinB} {pinY} OR2', 'Y <= A or B;'),
+('not_gate', 'NOT', 'logic', 'NOT gate (inverter)', '[{"name": "A", "x": 0, "y": 10, "direction": "input"}, {"name": "Y", "x": 60, "y": 10, "direction": "output"}]', 'U{label} {pinA} {pinY} NOT', 'Y <= not A;'),
+('voltage_source', 'V', 'power', 'Voltage source', '[{"name": "pos", "x": 30, "y": 0, "direction": "output"}, {"name": "neg", "x": 30, "y": 60, "direction": "output"}]', 'V{label} {pin_pos} {pin_neg} {value}', 'V <= {value};'),
+('current_source', 'I', 'power', 'Current source', '[{"name": "pos", "x": 30, "y": 0, "direction": "output"}, {"name": "neg", "x": 30, "y": 60, "direction": "output"}]', 'I{label} {pin_pos} {pin_neg} {value}', 'I <= {value};'),
+('diode', 'D', 'active', 'Diode', '[{"name": "anode", "x": 0, "y": 10, "direction": "inout"}, {"name": "cathode", "x": 60, "y": 10, "direction": "inout"}]', 'D{label} {anode} {cathode} 1N4148', 'Y <= A;'),
+('bjt_npn', 'Q', 'active', 'NPN Transistor', '[{"name": "collector", "x": 60, "y": 5, "direction": "inout"}, {"name": "base", "x": 0, "y": 15, "direction": "inout"}, {"name": "emitter", "x": 60, "y": 25, "direction": "inout"}]', 'Q{label} {collector} {base} {emitter} 2N2222', 'Y <= A and B;'),
+('opamp', 'U', 'active', 'Operational Amplifier', '[{"name": "in_pos", "x": 0, "y": 10, "direction": "input"}, {"name": "in_neg", "x": 0, "y": 30, "direction": "input"}, {"name": "vcc", "x": 30, "y": 0, "direction": "input"}, {"name": "vee", "x": 30, "y": 40, "direction": "input"}, {"name": "out", "x": 60, "y": 20, "direction": "output"}]', 'U{label} {in_pos} {in_neg} {vcc} {vee} {out} LM358', 'Y <= (A - B) * gain;'),
+('ground', 'GND', 'power', 'Ground reference', '[{"name": "gnd", "x": 10, "y": 0, "direction": "inout"}]', '', '')
 ON CONFLICT (component_type, symbol_name) DO NOTHING;

@@ -32,11 +32,17 @@ from tasks import (
     generate_component_symbol
 )
 
+# Import components router
+from components import router as components_router
+
 app = FastAPI(
     title="Synthra API Gateway",
     version="1.0.0",
     description="AI-driven Electronic Design Automation Platform"
 )
+
+# Include component endpoints
+app.include_router(components_router)
 
 # CORS configuration
 app.add_middleware(
@@ -98,7 +104,7 @@ async def upload_image(
 ):
     """
     Upload schematic image and start detection pipeline
-    
+
     Flow:
     1. Forward image to Vision service for detection (or dispatch to Celery)
     2. Store job info in Redis or memory
@@ -106,7 +112,7 @@ async def upload_image(
     """
     job_id = str(uuid.uuid4())
     store = get_job_store()
-    
+
     try:
         # Create job entry
         job_data = {
@@ -114,12 +120,12 @@ async def upload_image(
             "type": "detection",
             "filename": file.filename
         }
-        
+
         if store:
             store.create_job(job_id, job_data)
         else:
             jobs_store[job_id] = {**job_data, "status": JobStatus.PENDING, "created_at": datetime.utcnow().isoformat()}
-        
+
         # Async processing with Celery (optional)
         if use_async and USE_REDIS:
             image_data = await file.read()
@@ -127,13 +133,13 @@ async def upload_image(
                 args=[image_data, file.filename],
                 task_id=job_id
             )
-            
+
             return UploadImageResponse(
                 job_id=job_id,
                 status=JobStatus.PENDING,
                 message="Image processing started"
             )
-        
+
         # Synchronous processing (default)
         async with httpx.AsyncClient(timeout=60.0) as client:
             files = {"file": (file.filename, await file.read(), file.content_type)}
@@ -143,7 +149,7 @@ async def upload_image(
             )
             response.raise_for_status()
             detection_result = response.json()
-        
+
         # Update job with result
         if store:
             store.set_status(job_id, JobStatus.COMPLETED, result=detection_result)
@@ -152,13 +158,13 @@ async def upload_image(
                 "status": JobStatus.COMPLETED,
                 "result": detection_result
             })
-        
+
         return UploadImageResponse(
             job_id=job_id,
             status=JobStatus.COMPLETED,
             message="Image processed successfully"
         )
-        
+
     except httpx.HTTPError as e:
         error_msg = f"Vision service error: {str(e)}"
         if store:
@@ -175,7 +181,7 @@ async def get_result(job_id: str):
     Get job status and results
     """
     store = get_job_store()
-    
+
     if store:
         job = store.get_job(job_id)
         if not job:
@@ -184,7 +190,7 @@ async def get_result(job_id: str):
         if job_id not in jobs_store:
             raise HTTPException(status_code=404, detail="Job not found")
         job = jobs_store[job_id]
-    
+
     return JobStatusResponse(
         job_id=job_id,
         status=job["status"],
@@ -210,18 +216,18 @@ async def accept_edits(job_id: str, request: AcceptEditsRequest):
             )
             response.raise_for_status()
             result = response.json()
-        
+
         # Update job
         if job_id in jobs_store:
             jobs_store[job_id]["result"]["netlist"] = result
             jobs_store[job_id]["status"] = JobStatus.COMPLETED
-        
+
         return {
             "job_id": job_id,
             "status": "netlist_generated",
             "netlist": result
         }
-        
+
     except httpx.HTTPError as e:
         raise HTTPException(status_code=500, detail=f"Core service error: {str(e)}")
 
@@ -239,7 +245,7 @@ async def simulate(request: SimulateRequest):
             )
             response.raise_for_status()
             result = response.json()
-        
+
         # Store simulation result
         sim_job_id = str(uuid.uuid4())
         jobs_store[sim_job_id] = {
@@ -249,9 +255,9 @@ async def simulate(request: SimulateRequest):
             "result": result,
             "created_at": datetime.utcnow().isoformat()
         }
-        
+
         return result
-        
+
     except httpx.HTTPError as e:
         raise HTTPException(status_code=500, detail=f"Simulator service error: {str(e)}")
 
@@ -269,9 +275,9 @@ async def generate_pdf(request: GeneratePDFRequest):
             )
             response.raise_for_status()
             result = response.json()
-        
+
         return result
-        
+
     except httpx.HTTPError as e:
         raise HTTPException(status_code=500, detail=f"Docs service error: {str(e)}")
 
@@ -298,9 +304,9 @@ async def services_status():
         "docs": DOCS_SERVICE,
         "sve": SVE_SERVICE
     }
-    
+
     status = {}
-    
+
     async with httpx.AsyncClient(timeout=5.0) as client:
         for name, url in services.items():
             try:
@@ -308,7 +314,7 @@ async def services_status():
                 status[name] = response.json()
             except:
                 status[name] = {"status": "unhealthy"}
-    
+
     return status
 
 

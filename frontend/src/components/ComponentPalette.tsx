@@ -1,10 +1,6 @@
-/**
- * Component Palette - Loads components from SVE and displays them
- */
-
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Search, Zap, Circle, Square, Triangle } from 'lucide-react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { ChevronDown, Search, Zap } from 'lucide-react';
+import Input from './ui/Input';
 
 interface SVEComponent {
   component_type: string;
@@ -15,150 +11,199 @@ interface SVEComponent {
 }
 
 interface ComponentPaletteProps {
-  onComponentSelect: (componentType: string) => void;
+  onComponentSelect?: (componentType: string) => void;
+  onComponentDragStart?: (component: SVEComponent, e: React.DragEvent) => void;
 }
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-const SVE_URL = process.env.REACT_APP_SVE_URL || 'http://localhost:8005';
+const SVE_URL = (typeof process !== 'undefined' && process.env?.REACT_APP_SVE_URL) 
+  ? process.env.REACT_APP_SVE_URL 
+  : 'http://localhost:8005';
 
 export const ComponentPalette: React.FC<ComponentPaletteProps> = ({
-  onComponentSelect
+  onComponentSelect,
+  onComponentDragStart,
 }) => {
   const [components, setComponents] = useState<SVEComponent[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set(['all'])
+  );
+
   // Load popular components from SVE
   useEffect(() => {
     const loadComponents = async () => {
       try {
-        const response = await axios.get(`${SVE_URL}/api/components/popular`);
-        setComponents(response.data);
+        const response = await fetch(`${SVE_URL}/api/components/popular`);
+        const data = await response.json();
+        setComponents(data);
+        const categories = Array.from(new Set(data.map((c: SVEComponent) => c.category))) as string[];
+        setExpandedCategories(new Set(categories));
         setLoading(false);
       } catch (error) {
         console.error('Failed to load components:', error);
         setLoading(false);
       }
     };
-    
+
     loadComponents();
   }, []);
-  
+
+  // Group components by category
+  const groupedComponents = useMemo(() => {
+    const groups: Record<string, SVEComponent[]> = {};
+    components.forEach((comp) => {
+      if (!groups[comp.category]) {
+        groups[comp.category] = [];
+      }
+      groups[comp.category].push(comp);
+    });
+    return groups;
+  }, [components]);
+
   // Filter components
-  const filteredComponents = components.filter(comp => {
-    const matchesSearch = comp.component_type.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || comp.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-  
-  // Get unique categories
-  const categories = ['all', ...Array.from(new Set(components.map(c => c.category)))];
-  
+  const filteredGroups = useMemo(() => {
+    if (!searchQuery) return groupedComponents;
+
+    const query = searchQuery.toLowerCase();
+    const filtered: Record<string, SVEComponent[]> = {};
+    Object.entries(groupedComponents).forEach(([category, comps]) => {
+      const matched = comps.filter(
+        (comp) =>
+          comp.component_type.toLowerCase().includes(query) ||
+          comp.category.toLowerCase().includes(query)
+      );
+      if (matched.length > 0) {
+        filtered[category] = matched;
+      }
+    });
+    return filtered;
+  }, [groupedComponents, searchQuery]);
+
+  const toggleCategory = (categoryId: string) => {
+    const updated = new Set(expandedCategories);
+    if (updated.has(categoryId)) {
+      updated.delete(categoryId);
+    } else {
+      updated.add(categoryId);
+    }
+    setExpandedCategories(updated);
+  };
+
+  const handleDragStart = (component: SVEComponent, e: React.DragEvent) => {
+    e.dataTransfer.effectAllowed = 'copy';
+    e.dataTransfer.setData('component', JSON.stringify(component));
+    onComponentDragStart?.(component, e);
+  };
+
+  const getCategoryIcon = (category: string): string => {
+    const icons: Record<string, string> = {
+      passive: '⚪',
+      active: '●',
+      digital: '◻',
+      ic: '✣',
+      logic: '◈',
+      power: '⚡',
+      connectors: '↔',
+    };
+    return icons[category] || '◯';
+  };
+
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="p-4 border-b border-slate-200">
-        <h2 className="text-lg font-semibold text-slate-800 mb-3">Components</h2>
-        
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search components..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+    <div className="component-palette">
+      <div className="palette-header">
+        <h3 className="palette-title">Components</h3>
       </div>
-      
-      {/* Category Tabs */}
-      <div className="flex gap-1 p-2 border-b border-slate-200 overflow-x-auto">
-        {categories.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
-            className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
-              selectedCategory === cat
-                ? 'bg-blue-500 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            {cat.charAt(0).toUpperCase() + cat.slice(1)}
-          </button>
-        ))}
+
+      <div className="palette-search">
+        <Input
+          placeholder="Search components..."
+          prefix={<Search size={16} />}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
       </div>
-      
-      {/* Component List */}
-      <div className="flex-1 overflow-y-auto p-2">
+
+      <div className="palette-categories">
         {loading ? (
-          <div className="flex items-center justify-center h-32">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+          <div className="palette-loading">
+            <div className="w-6 h-6 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+            <p className="text-xs text-[var(--color-text-secondary)]">Loading components...</p>
           </div>
-        ) : filteredComponents.length === 0 ? (
-          <div className="text-center text-sm text-slate-500 py-8">
-            No components found
+        ) : Object.keys(filteredGroups).length === 0 ? (
+          <div className="palette-empty">
+            <p>No components found</p>
+            <span className="text-xs text-[var(--color-text-secondary)]">
+              Try adjusting your search
+            </span>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-2">
-            {filteredComponents.map(comp => (
+          Object.entries(filteredGroups).map(([category, comps]) => (
+            <div key={category} className="category-group">
               <button
-                key={comp.component_type}
-                onClick={() => onComponentSelect(comp.component_type)}
-                className="group relative p-3 bg-white border border-slate-200 rounded-lg hover:border-blue-400 hover:shadow-md transition-all cursor-grab active:cursor-grabbing"
-                title={comp.component_type}
+                className="category-header"
+                onClick={() => toggleCategory(category)}
               >
-                {/* Component Icon/SVG Preview */}
-                <div className="h-12 flex items-center justify-center mb-2">
-                  {comp.svg_content ? (
-                    <div 
-                      dangerouslySetInnerHTML={{ __html: comp.svg_content }}
-                      className="w-full h-full [&>svg]:w-full [&>svg]:h-full"
-                    />
-                  ) : (
-                    <ComponentIcon category={comp.category} />
-                  )}
-                </div>
-                
-                {/* Component Name */}
-                <div className="text-xs font-medium text-slate-700 text-center truncate">
-                  {formatComponentName(comp.component_type)}
-                </div>
-                
-                {/* Quality Badge */}
-                {comp.quality_score > 0.8 && (
-                  <div className="absolute top-1 right-1">
-                    <Zap className="h-3 w-3 text-yellow-500" fill="currentColor" />
-                  </div>
-                )}
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform ${
+                    expandedCategories.has(category) ? '' : '-rotate-90'
+                  }`}
+                />
+                <span className="category-icon">{getCategoryIcon(category)}</span>
+                <span className="category-name capitalize">{category}</span>
+                <span className="category-count">({comps.length})</span>
               </button>
-            ))}
-          </div>
+
+              {expandedCategories.has(category) && (
+                <div className="category-items">
+                  {comps.map((component) => (
+                    <div
+                      key={component.component_type}
+                      className="component-item"
+                      draggable
+                      onDragStart={(e) => handleDragStart(component, e)}
+                      onClick={() => onComponentSelect?.(component.component_type)}
+                      title={component.component_type}
+                    >
+                      <div className="component-icon">
+                        {component.svg_content ? (
+                          <div
+                            dangerouslySetInnerHTML={{ __html: component.svg_content }}
+                            className="w-full h-full [&>svg]:w-full [&>svg]:h-full"
+                          />
+                        ) : (
+                          getCategoryIcon(component.category)
+                        )}
+                      </div>
+                      <div className="component-info">
+                        <div className="component-name">{formatComponentName(component.component_type)}</div>
+                        <div className="component-desc text-xs">{component.category}</div>
+                      </div>
+                      {component.quality_score > 0.8 && (
+                        <div className="ml-auto">
+                          <Zap size={14} className="text-yellow-500" fill="currentColor" />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))
         )}
       </div>
-      
-      {/* Footer Info */}
-      <div className="p-3 border-t border-slate-200 text-xs text-slate-500">
-        {filteredComponents.length} component{filteredComponents.length !== 1 ? 's' : ''} available
-      </div>
+
+      {!loading && (
+        <div className="palette-footer">
+          <span className="text-xs text-[var(--color-text-secondary)]">
+            {Object.values(filteredGroups).reduce((a, b) => a + b.length, 0)} component
+            {Object.values(filteredGroups).reduce((a, b) => a + b.length, 0) !== 1 ? 's' : ''} available
+          </span>
+        </div>
+      )}
     </div>
   );
-};
-
-// Helper: Component icon based on category
-const ComponentIcon: React.FC<{ category: string }> = ({ category }) => {
-  switch (category) {
-    case 'passive':
-      return <Circle className="h-8 w-8 text-slate-400" />;
-    case 'active':
-      return <Triangle className="h-8 w-8 text-slate-400" />;
-    case 'digital':
-      return <Square className="h-8 w-8 text-slate-400" />;
-    default:
-      return <Circle className="h-8 w-8 text-slate-400" />;
-  }
 };
 
 // Helper: Format component name for display
@@ -166,6 +211,6 @@ const formatComponentName = (name: string): string => {
   return name
     .replace(/_/g, ' ')
     .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 };

@@ -228,7 +228,13 @@ services:
       - ./frontend:/app
       - /app/node_modules
     environment:
-      - REACT_APP_API_URL=http://localhost:8000
+      - REACT_APP_API_URL=http://api:8000
+      - REACT_APP_VISION_URL=http://vision:8000
+      - REACT_APP_CORE_URL=http://core:8000
+      - REACT_APP_SIMULATOR_URL=http://simulator:8000
+      - REACT_APP_SVE_URL=http://sve:8000
+      - REACT_APP_DOCS_URL=http://docs:8000
+      - REACT_APP_REALTIME_URL=http://realtime:8000
     ports:
       - "3000:3000"
     depends_on:

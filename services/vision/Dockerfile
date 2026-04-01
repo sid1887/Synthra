@@ -6,11 +6,11 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    libopencv-dev \
-    python3-opencv \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
     tesseract-ocr \
-    libgl1-mesa-glx \
-    libglib2.0-0 \
+    libtesseract-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies

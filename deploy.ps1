@@ -79,11 +79,12 @@ if (Test-Path "frontend\.env") {
     Write-Success "Frontend .env file exists"
 } else {
     Write-Warning "Creating frontend .env file..."
-    @"
+    $envContent = @"
 REACT_APP_API_URL=http://localhost:8000
 REACT_APP_SVE_URL=http://localhost:8005
 REACT_APP_REALTIME_URL=http://localhost:8006
-"@ | Out-File -FilePath "frontend\.env" -Encoding UTF8
+"@
+    $envContent | Out-File -FilePath "frontend\.env" -Encoding UTF8
     Write-Success "Frontend .env created"
 }
 
@@ -99,7 +100,7 @@ if ($env:USE_REDIS -eq "true") {
 Write-Step 3 "Building Docker Images"
 
 if ($SkipBuild) {
-    Write-Warning "Skipping build (--SkipBuild flag)"
+    Write-Warning "Skipping build (skip build flag)"
 } else {
     Write-Info "Building all services (this may take 10-15 minutes)..."
     Write-Host ""
@@ -169,7 +170,7 @@ if (-not $allHealthy) {
 if ($SeedDatabase) {
     Write-Step 6 "Seeding Database"
     
-    Write-Info "This will generate 100+ component symbols (15-30 minutes on GPU, 2-4 hours on CPU)"
+    Write-Info "This will generate many component symbols (GPU: 15-30 min, CPU: 2-4 hours)"
     Write-Host ""
     
     $confirm = Read-Host "Do you want to continue? (y/N)"
@@ -229,16 +230,16 @@ Write-Host "🎉 Deployment Complete!" -ForegroundColor Green
 Write-Host "================================" -ForegroundColor Green
 Write-Host ""
 Write-Host "Services Running:" -ForegroundColor Cyan
-Write-Host "  🌐 Frontend:        http://localhost:3000" -ForegroundColor White
-Write-Host "  📡 API Gateway:     http://localhost:8000" -ForegroundColor White
-Write-Host "  📡 API Docs:        http://localhost:8000/docs" -ForegroundColor White
-Write-Host "  🎨 SVE Admin:       http://localhost:3000/admin/sve" -ForegroundColor White
-Write-Host "  👁️  Vision Service:  http://localhost:8001" -ForegroundColor White
-Write-Host "  🔧 Core Service:    http://localhost:8002" -ForegroundColor White
-Write-Host "  ⚡ Simulator:       http://localhost:8003" -ForegroundColor White
-Write-Host "  📄 Docs Service:    http://localhost:8004" -ForegroundColor White
-Write-Host "  🤖 SVE Service:     http://localhost:8005" -ForegroundColor White
-Write-Host "  🔄 Real-Time:       http://localhost:8006" -ForegroundColor White
+Write-Host "  [*] Frontend:        http://localhost:3000" -ForegroundColor White
+Write-Host "  [*] API Gateway:     http://localhost:8000" -ForegroundColor White
+Write-Host "  [*] API Docs:        http://localhost:8000/docs" -ForegroundColor White
+Write-Host "  [*] SVE Admin:       http://localhost:3000/admin/sve" -ForegroundColor White
+Write-Host "  [*] Vision Service:  http://localhost:8001" -ForegroundColor White
+Write-Host "  [*] Core Service:    http://localhost:8002" -ForegroundColor White
+Write-Host "  [*] Simulator:       http://localhost:8003" -ForegroundColor White
+Write-Host "  [*] Docs Service:    http://localhost:8004" -ForegroundColor White
+Write-Host "  [*] SVE Service:     http://localhost:8005" -ForegroundColor White
+Write-Host "  [*] Real-Time:       http://localhost:8006" -ForegroundColor White
 Write-Host ""
 Write-Host "Useful Commands:" -ForegroundColor Cyan
 Write-Host "  View logs:          docker-compose logs -f [service]" -ForegroundColor White

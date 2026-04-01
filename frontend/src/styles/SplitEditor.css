@@ -1,0 +1,363 @@
+/* Split Editor Styles */
+
+.split-editor-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* Toolbar */
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.toolbar-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toolbar-center {
+  flex: 1;
+  justify-content: center;
+}
+
+.toolbar-right {
+  justify-content: flex-end;
+}
+
+.circuit-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Mode Buttons */
+.mode-buttons {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-tertiary);
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.mode-btn {
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.mode-btn:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.mode-btn.active {
+  background: var(--accent-primary);
+  color: white;
+}
+
+/* Language Selector */
+.language-selector {
+  display: flex;
+  align-items: center;
+}
+
+.select-small {
+  padding: 6px 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.select-small:hover {
+  border-color: var(--accent-primary);
+}
+
+.select-small:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1);
+}
+
+/* Button styles */
+.btn-small {
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-small:hover {
+  background: var(--bg-secondary);
+  border-color: var(--accent-primary);
+}
+
+.btn-primary {
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: #0284c7;
+  opacity: 0.9;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+/* Editor Content */
+.editor-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  gap: 1px;
+}
+
+/* Different layout modes */
+.editor-mode-visual {
+  .visual-pane {
+    flex: 1;
+  }
+}
+
+.editor-mode-code {
+  .code-pane {
+    flex: 1;
+  }
+}
+
+.editor-mode-split {
+  .visual-pane {
+    flex: 1;
+    min-width: 300px;
+  }
+
+  .code-pane {
+    flex: 1;
+    min-width: 300px;
+  }
+}
+
+/* Editor Panes */
+.editor-pane {
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.visual-pane {
+  border-right: 1px solid var(--border-color);
+}
+
+/* Code Editor Container */
+.code-editor-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-primary);
+}
+
+.code-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  gap: 12px;
+}
+
+.code-editor-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.read-only-badge {
+  padding: 2px 6px;
+  background: var(--warning);
+  color: white;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.code-editor-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.code-editor-wrapper {
+  flex: 1;
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+
+.code-editor-errors {
+  max-height: 120px;
+  overflow-y: auto;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  padding: 8px;
+}
+
+.error-item {
+  display: flex;
+  gap: 8px;
+  padding: 6px 8px;
+  background: rgba(239, 68, 68, 0.1);
+  border-left: 3px solid var(--danger);
+  border-radius: 2px;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.error-line {
+  color: var(--danger);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.error-message {
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+/* Status Bar */
+.editor-statusbar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 8px 16px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.status-item {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.status-item strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Loading State */
+.editor-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .editor-mode-split {
+    .visual-pane {
+      display: none;
+    }
+
+    .code-pane {
+      flex: 1;
+    }
+  }
+
+  .toolbar-section {
+    flex: 1;
+
+    &.toolbar-right {
+      flex: 0;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .editor-toolbar {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  .mode-buttons {
+    padding: 3px;
+    gap: 2px;
+  }
+
+  .mode-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .circuit-title {
+    font-size: 14px;
+  }
+
+  .editor-statusbar {
+    gap: 12px;
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+}
+
+/* CSS Variables Definition (light theme override) */
+:root {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --border-color: #475569;
+  --accent-primary: #0ea5e9;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+}
+
+[data-theme='light'] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border-color: #e2e8f0;
+  --accent-primary: #0284c7;
+}
