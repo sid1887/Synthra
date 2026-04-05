@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "3000:3000"
+    environment:
+      - SYNTHRA_ENV=production
+      - PORT=3000
+      - LOG_LEVEL=info
+      - AI_API_URL=${AI_API_URL:-https://api.groq.com/openai/v1}
+      - AI_API_KEY=${AI_API_KEY:- }
+      - MAX_UPLOAD_MB=10
+      - REQUEST_TIMEOUT_MS=30000
+      - RATE_LIMIT_PER_MIN=30
+      - ENABLE_SIM=true
+      - STORAGE_PATH=/app/storage
+    volumes:
+      - ./storage:/app/storage
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  storage:

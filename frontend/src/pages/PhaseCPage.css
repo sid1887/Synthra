@@ -1,0 +1,393 @@
+/**
+ * Phase C Page Styles
+ * Main container styling for unified Phase C interface
+ */
+
+.phase-c-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+  min-height: 100vh;
+}
+
+/* Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid rgba(148, 163, 184, 0.2);
+}
+
+.header-content {
+  flex: 1;
+}
+
+.page-header h1 {
+  margin: 0 0 0.75rem 0;
+  color: #e2e8f0;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.page-subtitle {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Quick Stats */
+.quick-stats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 0.75rem;
+  backdrop-filter: blur(10px);
+}
+
+.stat-icon {
+  font-size: 1.5rem;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stat-label {
+  display: block;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.stat-value {
+  display: block;
+  color: #e2e8f0;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* Tab Navigation */
+.tab-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.tab-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.tab-category {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.category-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(71, 85, 105, 0.15);
+  border-radius: 0.5rem;
+  border-left: 3px solid #3b82f6;
+}
+
+.category-icon {
+  font-size: 1.25rem;
+}
+
+.category-title span:last-child {
+  color: #cbd5e1;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.tab-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(71, 85, 105, 0.1);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #94a3b8;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.tab-btn:hover:not(.active) {
+  border-color: rgba(148, 163, 184, 0.4);
+  background: rgba(71, 85, 105, 0.15);
+  color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-color: #2563eb;
+  color: white;
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+}
+
+.tab-icon {
+  font-size: 1.1rem;
+}
+
+.tab-label {
+  font-weight: 700;
+}
+
+/* Tab Description */
+.tab-description {
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+  border-left: 3px solid #3b82f6;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.tab-description p {
+  margin: 0;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.tab-description strong {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #e2e8f0;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tab-description span {
+  color: #94a3b8;
+}
+
+/* Tab Content */
+.tab-content {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* State Debug */
+.state-debug {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(71, 85, 105, 0.1);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 0.75rem;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.state-debug details {
+  cursor: pointer;
+}
+
+.state-debug summary {
+  color: #60a5fa;
+  font-weight: 600;
+  padding: 0.75rem;
+  border-radius: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.state-debug summary:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.state-debug pre {
+  margin: 1rem 0 0 0;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.8);
+  border-radius: 0.4rem;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  overflow-x: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .page-header {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .quick-stats {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    flex: 1;
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .phase-c-page {
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+
+  .page-header {
+    padding-bottom: 1.5rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .page-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .tab-navigation {
+    padding: 1.5rem;
+  }
+
+  .tab-groups {
+    gap: 1rem;
+  }
+
+  .tab-buttons {
+    gap: 0.5rem;
+  }
+
+  .tab-btn {
+    padding: 0.6rem 0.9rem;
+    font-size: 0.85rem;
+  }
+
+  .tab-label {
+    display: none;
+  }
+
+  .tab-icon {
+    font-size: 1rem;
+  }
+
+  .quick-stats {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .stat {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .phase-c-page {
+    padding: 0.75rem;
+    gap: 1rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .page-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .quick-stats {
+    gap: 0.5rem;
+  }
+
+  .stat {
+    padding: 0.75rem;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+  }
+
+  .stat-value {
+    font-size: 0.95rem;
+  }
+
+  .tab-navigation {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .category-title {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .tab-buttons {
+    gap: 0.4rem;
+  }
+
+  .tab-btn {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.75rem;
+  }
+
+  .tab-description {
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+}

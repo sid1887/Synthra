@@ -1,0 +1,139 @@
+/* Landing Page Styles */
+.landing-page {
+  width: 100%;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+  color: #e0e0e0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.landing-scene {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+}
+
+.circuit-container {
+  position: absolute;
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+}
+
+/* SVG circuit general styles */
+.circuit-svg {
+  width: 100%;
+  height: 100%;
+  max-width: 1200px;
+  max-height: 800px;
+  filter: drop-shadow(0 0 30px rgba(42, 157, 143, 0.1));
+  will-change: transform;
+}
+
+/* Responsive circuit */
+@media (max-width: 1024px) {
+  .circuit-svg {
+    max-width: 900px;
+    max-height: 600px;
+  }
+}
+
+@media (max-width: 768px) {
+  .circuit-svg {
+    max-width: 600px;
+    max-height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .circuit-svg {
+    max-width: 100%;
+    max-height: 300px;
+  }
+}
+
+/* Content sections below hero */
+.landing-content {
+  position: relative;
+  width: 100%;
+  background: #0a0e27;
+  padding: 0;
+  margin-top: 100vh; /* Account for pinned scene */
+  z-index: 10;
+}
+
+.content-section {
+  min-height: 100vh;
+  padding: 120px 60px;
+  border-top: 1px solid rgba(42, 157, 143, 0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.content-section h2 {
+  font-size: 3rem;
+  margin-bottom: 30px;
+  background: linear-gradient(135deg, #2a9d8f, #1a7a6f);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: bold;
+}
+
+.content-section p {
+  font-size: 1.2rem;
+  color: #aaa;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .landing-scene {
+    animation: none;
+  }
+
+  .circuit-svg {
+    transition: none;
+  }
+}
+
+/* Dark mode preference */
+@media (prefers-color-scheme: dark) {
+  .landing-page {
+    background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+  }
+
+  .content-section {
+    background: #0f1220;
+    border-top-color: rgba(42, 157, 143, 0.15);
+  }
+}
+
+/* Light mode support (if needed later) */
+@media (prefers-color-scheme: light) {
+  .landing-page {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+    color: #1a1f3a;
+  }
+
+  .content-section {
+    background: #ffffff;
+    border-top-color: rgba(42, 157, 143, 0.3);
+  }
+
+  .content-section p {
+    color: #555;
+  }
+}
