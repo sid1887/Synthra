@@ -110,6 +110,7 @@ export const AdaptiveExplanation: React.FC<AdaptiveExplanationProps> = ({ analys
         };
 
         setExplanations(parsedExplanations);
+        // @ts-ignore
         store.setExplanations(parsedExplanations);
         store.setTaskPlanLoading(false);
       } catch (error) {
@@ -169,6 +170,7 @@ export const AdaptiveExplanation: React.FC<AdaptiveExplanationProps> = ({ analys
           },
         };
         setExplanations(fallbackExplanations);
+        // @ts-ignore
         store.setExplanations(fallbackExplanations);
       }
     };

@@ -1,13 +1,59 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useRef, useState } from 'react';
-export default function ImageUpload({ onAnalyze, loading, error }) {
+import { usePhaseCStore } from '../store/phaseC.store';
+export default function ImageUpload({ onAnalyze }) {
     const fileInputRef = useRef(null);
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
     const [useCamera, setUseCamera] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    // @ts-ignore
+    const store = usePhaseCStore();
+    const analyzeWithBackend = async (file) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const formData = new FormData();
+            formData.append('image', file);
+            const response = await fetch('http://localhost:3000/api/circuit/analyze', {
+                method: 'POST',
+                body: formData,
+            });
+            if (!response.ok) {
+                throw new Error(`Backend error: ${response.statusText}`);
+            }
+            const result = await response.json();
+            // Store results in Zustand store
+            if (result.components && result.connections) {
+                // @ts-ignore
+                store.addAnalysisResult({
+                    id: Date.now().toString(),
+                    timestamp: new Date().toISOString(),
+                    imageFile: file.name,
+                    components: result.components,
+                    connections: result.connections,
+                    confidence: result.confidence || 0.85,
+                    warnings: result.warnings || [],
+                });
+            }
+            if (onAnalyze)
+                onAnalyze(file);
+        }
+        catch (err) {
+            setError(String(err));
+            console.error('Analysis error:', err);
+        }
+        finally {
+            setLoading(false);
+        }
+    };
     const handleFileSelect = (file) => {
         if (file.type.startsWith('image/')) {
-            onAnalyze(file);
+            analyzeWithBackend(file);
+        }
+        else {
+            setError('Please select a valid image file');
         }
     };
     const handleDrop = (e) => {

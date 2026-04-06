@@ -110,42 +110,37 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
         <div className="circuit-container">
           <CircuitSVG
             ref={svgRef}
-            onHotspotClick={handleHotspotClick}
+            onHotspotClick={onNavigate}
           />
         </div>
+      </div>
 
-        {/* Below-the-fold content sections start here */}
-        <div className="landing-content">
-          <section id="analysis-workspace" className="content-section">
-            <h2>Analysis Workspace</h2>
-            <p>Detailed circuit analysis and component detection</p>
-          </section>
-
-          <section id="component-registry" className="content-section">
-            <h2>Component Registry</h2>
-            <p>Browse and manage detected components</p>
-          </section>
-
-          <section id="schematic-view" className="content-section">
-            <h2>Schematic View</h2>
-            <p>Interactive circuit schematic visualization</p>
-          </section>
-
-          <section id="simulation-view" className="content-section">
-            <h2>Simulation</h2>
-            <p>Simulate circuit behavior</p>
-          </section>
-
-          <section id="history" className="content-section">
-            <h2>History</h2>
-            <p>View previous analyses</p>
-          </section>
-
-          <section id="export" className="content-section">
-            <h2>Export</h2>
-            <p>Export analysis results</p>
-          </section>
-        </div>
+      {/* Below-the-fold content sections */}
+      <div className="landing-content">
+        <section id="upload" className="content-section">
+          <h2>Upload Circuit</h2>
+          <p>Get started by uploading a circuit image</p>
+        </section>
+        <section id="overview" className="content-section">
+          <h2>Overview</h2>
+          <p>Circuit analysis overview</p>
+        </section>
+        <section id="history" className="content-section">
+          <h2>History</h2>
+          <p>View previous analyses</p>
+        </section>
+        <section id="components" className="content-section">
+          <h2>Components</h2>
+          <p>Component registry</p>
+        </section>
+        <section id="schematic" className="content-section">
+          <h2>Schematic</h2>
+          <p>Circuit schematic view</p>
+        </section>
+        <section id="simulation" className="content-section">
+          <h2>Simulation</h2>
+          <p>Circuit simulation</p>
+        </section>
       </div>
     </div>
   );

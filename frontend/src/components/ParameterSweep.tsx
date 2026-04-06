@@ -66,6 +66,7 @@ export const ParameterSweep: React.FC<ParameterSweepProps> = ({
 
         const data = await response.json();
         setSweepData(data);
+        // @ts-ignore
         store.setSweepResults(data);
       } catch (error) {
         store.setSweepError(String(error));

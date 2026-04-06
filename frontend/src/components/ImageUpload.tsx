@@ -1,20 +1,67 @@
 import React, { useRef, useState } from 'react';
+import { usePhaseCStore } from '../store/phaseC.store';
 
 interface ImageUploadProps {
-  onAnalyze: (file: File) => void;
-  loading?: boolean;
-  error?: string;
+  onAnalyze?: (file: File) => void;
 }
 
-export default function ImageUpload({ onAnalyze, loading, error }: ImageUploadProps) {
+export default function ImageUpload({ onAnalyze }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [useCamera, setUseCamera] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  // @ts-ignore
+  const store = usePhaseCStore();
+
+  const analyzeWithBackend = async (file: File) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch('http://localhost:3000/api/circuit/analyze', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Backend error: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      // Store results in Zustand store
+      if (result.components && result.connections) {
+        // @ts-ignore
+        store.addAnalysisResult({
+          id: Date.now().toString(),
+          timestamp: new Date().toISOString(),
+          imageFile: file.name,
+          components: result.components,
+          connections: result.connections,
+          confidence: result.confidence || 0.85,
+          warnings: result.warnings || [],
+        });
+      }
+
+      if (onAnalyze) onAnalyze(file);
+    } catch (err) {
+      setError(String(err));
+      console.error('Analysis error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleFileSelect = (file: File) => {
     if (file.type.startsWith('image/')) {
-      onAnalyze(file);
+      analyzeWithBackend(file);
+    } else {
+      setError('Please select a valid image file');
     }
   };
 

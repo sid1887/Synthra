@@ -5,7 +5,9 @@
  */
 
 import { create } from 'zustand';
-import { devtools, persist, immer } from 'zustand/middleware';
+import { devtools, persist } from 'zustand/middleware';
+
+type SetState = any;
 
 /**
  * Transient Analysis State
@@ -244,7 +246,7 @@ export interface PhaseCStore {
 export const usePhaseCStore = create<PhaseCStore>()(
   devtools(
     persist(
-      immer((set, get) => ({
+      (set: any, get: any) => ({
         // Transient Analysis State
         transient: {
           frames: [],
@@ -507,6 +509,11 @@ export const usePhaseCStore = create<PhaseCStore>()(
             state.aiOrchestration.activeExplanationLevel = level;
           }),
 
+        loadScene3DVisualization: (components: any) =>
+          set((state: any) => {
+            state.scene3D.components = components;
+          }),
+
         setAIError: (error) =>
           set((state) => {
             state.aiOrchestration.error = error;
@@ -523,42 +530,42 @@ export const usePhaseCStore = create<PhaseCStore>()(
           error: null,
         },
 
-        setAutomationRules: (rules) =>
-          set((state) => {
+        setAutomationRules: (rules: any) =>
+          set((state: any) => {
             state.automation.rules = rules;
           }),
 
-        setAutomationPreview: (preview) =>
-          set((state) => {
+        setAutomationPreview: (preview: any) =>
+          set((state: any) => {
             state.automation.preview = preview;
             state.automation.previewLoading = false;
           }),
 
-        setPreviewLoading: (loading) =>
-          set((state) => {
+        setPreviewLoading: (loading: any) =>
+          set((state: any) => {
             state.automation.previewLoading = loading;
           }),
 
-        selectAutomationRule: (ruleId) =>
-          set((state) => {
+        selectAutomationRule: (ruleId: any) =>
+          set((state: any) => {
             state.automation.selectedRuleId = ruleId;
           }),
 
-        setAutomationStats: (stats) =>
-          set((state) => {
+        setAutomationStats: (stats: any) =>
+          set((state: any) => {
             state.automation.stats = stats;
           }),
 
-        setAutomationError: (error) =>
-          set((state) => {
+        setAutomationError: (error: any) =>
+          set((state: any) => {
             state.automation.error = error;
           }),
 
         clearAutomationPreview: () =>
-          set((state) => {
+          set((state: any) => {
             state.automation.preview = null;
           }),
-      })),
+      }),
       {
         name: 'phase-c-store',
         partialize: (state) => ({

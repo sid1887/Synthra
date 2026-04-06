@@ -51,6 +51,9 @@ import { createPipeline } from './modules/analyze-pipeline.js';
 import { getComponentRegistry, getCircuitTemplateDB } from './modules/data-registry.js';
 import { validateComponentDetectionArray, validateAnalysisResponse } from './modules/schema-validation.js';
 
+// New: Circuit analysis API  
+import circuitApiRouter from './routes/circuit-api.js';
+
 // WebSocket
 import { initializeWebSocketServer } from './websocket.js';
 
@@ -906,6 +909,8 @@ app.post('/api/automation/stats', (req: Request, res: Response) => {
 /**
  * 404 handler
  */
+app.use('/api/circuit', circuitApiRouter);
+
 app.use((req: Request, res: Response) => {
   res.status(404).json({ error: 'Not found' });
 });
