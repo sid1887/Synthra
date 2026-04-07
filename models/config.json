@@ -1,0 +1,11 @@
+{
+  "model": "yolov8s",
+  "epochs": 50,
+  "imgsz": 416,
+  "batch": 4,
+  "device": "cpu",
+  "workers": 0,
+  "optimizer": "SGD",
+  "lr0": 0.01,
+  "momentum": 0.937
+}

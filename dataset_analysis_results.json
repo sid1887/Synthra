@@ -1,0 +1,368 @@
+{
+  "yolov8_circuit elements": {
+    "name": "circuit elements",
+    "path": "c:\\Synthra\\Datasets\\circuit elements.yolov8",
+    "splits": {
+      "train": {
+        "images_count": 772,
+        "labels_count": 772,
+        "class_distribution_sample": {
+          "8": 1572,
+          "32": 1698,
+          "4": 1600,
+          "11": 68,
+          "25": 942,
+          "31": 43,
+          "26": 1011,
+          "33": 4817,
+          "5": 4794,
+          "39": 559,
+          "23": 371,
+          "19": 792,
+          "6": 68,
+          "38": 48,
+          "1": 136,
+          "17": 12,
+          "9": 216,
+          "12": 472,
+          "14": 32,
+          "42": 228,
+          "21": 140,
+          "22": 107,
+          "43": 388,
+          "44": 8,
+          "37": 12,
+          "24": 4,
+          "27": 12,
+          "10": 4,
+          "41": 4
+        },
+        "image_formats": [
+          ".jpg"
+        ]
+      }
+    }
+  },
+  "yolov8_Circuit Schematic Detection": {
+    "name": "Circuit Schematic Detection",
+    "path": "c:\\Synthra\\Datasets\\Circuit Schematic Detection.yolov8",
+    "splits": {
+      "train": {
+        "images_count": 2000,
+        "labels_count": 2000,
+        "class_distribution_sample": {
+          "28": 188,
+          "7": 9,
+          "24": 3,
+          "1": 13,
+          "31": 14,
+          "12": 70,
+          "3": 131,
+          "27": 6,
+          "29": 28,
+          "34": 1,
+          "35": 4,
+          "23": 4,
+          "11": 112,
+          "5": 111,
+          "30": 46,
+          "15": 46,
+          "10": 9,
+          "19": 26,
+          "14": 12,
+          "33": 10,
+          "16": 9,
+          "4": 30,
+          "2": 6,
+          "32": 13,
+          "0": 7,
+          "22": 1,
+          "13": 6,
+          "18": 3,
+          "8": 3,
+          "26": 6,
+          "17": 3
+        },
+        "image_formats": [
+          ".jpg"
+        ]
+      }
+    }
+  },
+  "yolov8_Electronic Components": {
+    "name": "Electronic Components",
+    "path": "c:\\Synthra\\Datasets\\Electronic Components.yolov8",
+    "splits": {
+      "train": {
+        "images_count": 1803,
+        "labels_count": 1803,
+        "class_distribution_sample": {
+          "1": 100
+        },
+        "image_formats": [
+          ".jpg"
+        ]
+      }
+    }
+  },
+  "3d_models": {
+    "path": "c:\\Synthra\\Datasets\\dataverse_files",
+    "formats": {
+      "train": {
+        "obj": {
+          "count": 163,
+          "sample_files": [
+            "0271017.obj",
+            "0309112.obj",
+            "0311126.obj"
+          ]
+        },
+        "stl": {
+          "count": 163,
+          "sample_files": [
+            "0271017.stl",
+            "0309112.stl",
+            "0311126.stl"
+          ]
+        },
+        "off": {
+          "count": 163,
+          "sample_files": [
+            "0271017.off",
+            "0309112.off",
+            "0311126.off"
+          ]
+        },
+        "txt": {
+          "count": 163,
+          "sample_files": [
+            "0271017.txt",
+            "0309112.txt",
+            "0311126.txt"
+          ]
+        }
+      },
+      "val": {
+        "obj": {
+          "count": 47,
+          "sample_files": [
+            "0311087.obj",
+            "0311142.obj",
+            "0441517.obj"
+          ]
+        },
+        "stl": {
+          "count": 47,
+          "sample_files": [
+            "0311087.stl",
+            "0311142.stl",
+            "0441517.stl"
+          ]
+        },
+        "off": {
+          "count": 47,
+          "sample_files": [
+            "0311087.off",
+            "0311142.off",
+            "0441517.off"
+          ]
+        },
+        "txt": {
+          "count": 47,
+          "sample_files": [
+            "0311087.txt",
+            "0311142.txt",
+            "0441517.txt"
+          ]
+        }
+      },
+      "test": {
+        "obj": {
+          "count": 24,
+          "sample_files": [
+            "0444048.obj",
+            "0446017.obj",
+            "0452027.obj"
+          ]
+        },
+        "stl": {
+          "count": 24,
+          "sample_files": [
+            "0444048.stl",
+            "0446017.stl",
+            "0452027.stl"
+          ]
+        },
+        "off": {
+          "count": 24,
+          "sample_files": [
+            "0444048.off",
+            "0446017.off",
+            "0452027.off"
+          ]
+        },
+        "txt": {
+          "count": 24,
+          "sample_files": [
+            "0444048.txt",
+            "0446017.txt",
+            "0452027.txt"
+          ]
+        }
+      }
+    }
+  },
+  "components": {
+    "path": "c:\\Synthra\\Datasets\\components",
+    "categories": {
+      "armature": {
+        "image_count": 321,
+        "subdirs": 0
+      },
+      "attenuator": {
+        "image_count": 271,
+        "subdirs": 0
+      },
+      "Bypass-capacitor": {
+        "image_count": 302,
+        "subdirs": 0
+      },
+      "cartridge-fuse": {
+        "image_count": 225,
+        "subdirs": 0
+      },
+      "clip-lead": {
+        "image_count": 288,
+        "subdirs": 0
+      },
+      "electric-relay": {
+        "image_count": 420,
+        "subdirs": 0
+      },
+      "Electrolytic-capacitor": {
+        "image_count": 403,
+        "subdirs": 0
+      },
+      "filament": {
+        "image_count": 400,
+        "subdirs": 0
+      },
+      "heat-sink": {
+        "image_count": 420,
+        "subdirs": 0
+      },
+      "images": {
+        "image_count": 10990,
+        "subdirs": 36
+      },
+      "induction-coil": {
+        "image_count": 151,
+        "subdirs": 0
+      },
+      "Integrated-micro-circuit": {
+        "image_count": 470,
+        "subdirs": 0
+      },
+      "jumper-cable": {
+        "image_count": 249,
+        "subdirs": 0
+      },
+      "junction-transistor": {
+        "image_count": 491,
+        "subdirs": 0
+      },
+      "LED": {
+        "image_count": 480,
+        "subdirs": 0
+      },
+      "light-circuit": {
+        "image_count": 57,
+        "subdirs": 0
+      },
+      "limiter-clipper": {
+        "image_count": 427,
+        "subdirs": 0
+      },
+      "local-oscillator": {
+        "image_count": 112,
+        "subdirs": 0
+      },
+      "memory-chip": {
+        "image_count": 297,
+        "subdirs": 0
+      },
+      "microchip": {
+        "image_count": 461,
+        "subdirs": 0
+      },
+      "microprocessor": {
+        "image_count": 457,
+        "subdirs": 0
+      },
+      "multiplexer": {
+        "image_count": 85,
+        "subdirs": 0
+      },
+      "omni-directional-antenna": {
+        "image_count": 124,
+        "subdirs": 0
+      },
+      "PNP-transistor": {
+        "image_count": 307,
+        "subdirs": 0
+      },
+      "potential-divider": {
+        "image_count": 237,
+        "subdirs": 0
+      },
+      "potentiometer": {
+        "image_count": 468,
+        "subdirs": 0
+      },
+      "pulse-generator": {
+        "image_count": 317,
+        "subdirs": 0
+      },
+      "relay": {
+        "image_count": 443,
+        "subdirs": 0
+      },
+      "rheostat": {
+        "image_count": 170,
+        "subdirs": 0
+      },
+      "semi-conductor": {
+        "image_count": 421,
+        "subdirs": 0
+      },
+      "semiconductor-diode": {
+        "image_count": 417,
+        "subdirs": 0
+      },
+      "shunt": {
+        "image_count": 104,
+        "subdirs": 0
+      },
+      "solenoid": {
+        "image_count": 317,
+        "subdirs": 0
+      },
+      "stabilizer": {
+        "image_count": 162,
+        "subdirs": 0
+      },
+      "step-down-transformer": {
+        "image_count": 408,
+        "subdirs": 0
+      },
+      "step-up-transformer": {
+        "image_count": 155,
+        "subdirs": 0
+      },
+      "transistor": {
+        "image_count": 153,
+        "subdirs": 0
+      }
+    }
+  }
+}
