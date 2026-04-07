@@ -1,0 +1,15 @@
+{
+  "total_images": 16147,
+  "total_classes": 126,
+  "splits": {
+    "train": 13143,
+    "val": 1458,
+    "test": 1546
+  },
+  "sources": {
+    "YOLO": 89,
+    "Components": 36,
+    "3D_Projected": 1
+  },
+  "timestamp": 1775571298.740197
+}

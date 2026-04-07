@@ -1,0 +1,1077 @@
+{
+  "0": {
+    "name": "class_0",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "0"
+      }
+    ]
+  },
+  "1": {
+    "name": "class_1",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "1"
+      }
+    ]
+  },
+  "2": {
+    "name": "class_2",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "2"
+      }
+    ]
+  },
+  "3": {
+    "name": "class_3",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "3"
+      }
+    ]
+  },
+  "4": {
+    "name": "class_4",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "4"
+      }
+    ]
+  },
+  "5": {
+    "name": "class_5",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "5"
+      }
+    ]
+  },
+  "6": {
+    "name": "class_6",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "6"
+      }
+    ]
+  },
+  "7": {
+    "name": "class_7",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "7"
+      }
+    ]
+  },
+  "8": {
+    "name": "class_8",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "8"
+      }
+    ]
+  },
+  "9": {
+    "name": "class_9",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "9"
+      }
+    ]
+  },
+  "10": {
+    "name": "class_10",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "10"
+      }
+    ]
+  },
+  "11": {
+    "name": "class_11",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "11"
+      }
+    ]
+  },
+  "12": {
+    "name": "class_12",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "12"
+      }
+    ]
+  },
+  "13": {
+    "name": "class_13",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "13"
+      }
+    ]
+  },
+  "14": {
+    "name": "class_14",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "14"
+      }
+    ]
+  },
+  "15": {
+    "name": "class_15",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "15"
+      }
+    ]
+  },
+  "16": {
+    "name": "class_16",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "16"
+      }
+    ]
+  },
+  "17": {
+    "name": "class_17",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "17"
+      }
+    ]
+  },
+  "18": {
+    "name": "class_18",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "18"
+      }
+    ]
+  },
+  "19": {
+    "name": "class_19",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "19"
+      }
+    ]
+  },
+  "20": {
+    "name": "class_20",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "20"
+      }
+    ]
+  },
+  "21": {
+    "name": "class_21",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "21"
+      }
+    ]
+  },
+  "22": {
+    "name": "class_22",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "22"
+      }
+    ]
+  },
+  "23": {
+    "name": "class_23",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "23"
+      }
+    ]
+  },
+  "24": {
+    "name": "class_24",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "24"
+      }
+    ]
+  },
+  "25": {
+    "name": "class_25",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "25"
+      }
+    ]
+  },
+  "26": {
+    "name": "class_26",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "26"
+      }
+    ]
+  },
+  "27": {
+    "name": "class_27",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "27"
+      }
+    ]
+  },
+  "28": {
+    "name": "class_28",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "28"
+      }
+    ]
+  },
+  "29": {
+    "name": "class_29",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "29"
+      }
+    ]
+  },
+  "30": {
+    "name": "class_30",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "30"
+      }
+    ]
+  },
+  "31": {
+    "name": "class_31",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "31"
+      }
+    ]
+  },
+  "32": {
+    "name": "class_32",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "32"
+      }
+    ]
+  },
+  "33": {
+    "name": "class_33",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "33"
+      }
+    ]
+  },
+  "34": {
+    "name": "class_34",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "34"
+      }
+    ]
+  },
+  "35": {
+    "name": "class_35",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Circuit Schematic Detection",
+        "original_id": "35"
+      }
+    ]
+  },
+  "36": {
+    "name": "class_36",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Electronic Components",
+        "original_id": "0"
+      }
+    ]
+  },
+  "37": {
+    "name": "class_37",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Electronic Components",
+        "original_id": "1"
+      }
+    ]
+  },
+  "38": {
+    "name": "class_38",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Electronic Components",
+        "original_id": "2"
+      }
+    ]
+  },
+  "39": {
+    "name": "class_39",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Electronic Components",
+        "original_id": "3"
+      }
+    ]
+  },
+  "40": {
+    "name": "class_40",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Electronic Components",
+        "original_id": "4"
+      }
+    ]
+  },
+  "41": {
+    "name": "class_41",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Electronic Components",
+        "original_id": "5"
+      }
+    ]
+  },
+  "42": {
+    "name": "class_42",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "Electronic Components",
+        "original_id": "6"
+      }
+    ]
+  },
+  "43": {
+    "name": "class_43",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "0"
+      }
+    ]
+  },
+  "44": {
+    "name": "class_44",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "1"
+      }
+    ]
+  },
+  "45": {
+    "name": "class_45",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "2"
+      }
+    ]
+  },
+  "46": {
+    "name": "class_46",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "3"
+      }
+    ]
+  },
+  "47": {
+    "name": "class_47",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "4"
+      }
+    ]
+  },
+  "48": {
+    "name": "class_48",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "5"
+      }
+    ]
+  },
+  "49": {
+    "name": "class_49",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "6"
+      }
+    ]
+  },
+  "50": {
+    "name": "class_50",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "7"
+      }
+    ]
+  },
+  "51": {
+    "name": "class_51",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "8"
+      }
+    ]
+  },
+  "52": {
+    "name": "class_52",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "9"
+      }
+    ]
+  },
+  "53": {
+    "name": "class_53",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "10"
+      }
+    ]
+  },
+  "54": {
+    "name": "class_54",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "11"
+      }
+    ]
+  },
+  "55": {
+    "name": "class_55",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "12"
+      }
+    ]
+  },
+  "56": {
+    "name": "class_56",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "13"
+      }
+    ]
+  },
+  "57": {
+    "name": "class_57",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "14"
+      }
+    ]
+  },
+  "58": {
+    "name": "class_58",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "15"
+      }
+    ]
+  },
+  "59": {
+    "name": "class_59",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "16"
+      }
+    ]
+  },
+  "60": {
+    "name": "class_60",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "17"
+      }
+    ]
+  },
+  "61": {
+    "name": "class_61",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "18"
+      }
+    ]
+  },
+  "62": {
+    "name": "class_62",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "19"
+      }
+    ]
+  },
+  "63": {
+    "name": "class_63",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "20"
+      }
+    ]
+  },
+  "64": {
+    "name": "class_64",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "21"
+      }
+    ]
+  },
+  "65": {
+    "name": "class_65",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "22"
+      }
+    ]
+  },
+  "66": {
+    "name": "class_66",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "23"
+      }
+    ]
+  },
+  "67": {
+    "name": "class_67",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "24"
+      }
+    ]
+  },
+  "68": {
+    "name": "class_68",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "25"
+      }
+    ]
+  },
+  "69": {
+    "name": "class_69",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "26"
+      }
+    ]
+  },
+  "70": {
+    "name": "class_70",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "27"
+      }
+    ]
+  },
+  "71": {
+    "name": "class_71",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "28"
+      }
+    ]
+  },
+  "72": {
+    "name": "class_72",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "29"
+      }
+    ]
+  },
+  "73": {
+    "name": "class_73",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "30"
+      }
+    ]
+  },
+  "74": {
+    "name": "class_74",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "31"
+      }
+    ]
+  },
+  "75": {
+    "name": "class_75",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "32"
+      }
+    ]
+  },
+  "76": {
+    "name": "class_76",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "33"
+      }
+    ]
+  },
+  "77": {
+    "name": "class_77",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "34"
+      }
+    ]
+  },
+  "78": {
+    "name": "class_78",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "35"
+      }
+    ]
+  },
+  "79": {
+    "name": "class_79",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "36"
+      }
+    ]
+  },
+  "80": {
+    "name": "class_80",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "37"
+      }
+    ]
+  },
+  "81": {
+    "name": "class_81",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "38"
+      }
+    ]
+  },
+  "82": {
+    "name": "class_82",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "39"
+      }
+    ]
+  },
+  "83": {
+    "name": "class_83",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "40"
+      }
+    ]
+  },
+  "84": {
+    "name": "class_84",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "41"
+      }
+    ]
+  },
+  "85": {
+    "name": "class_85",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "42"
+      }
+    ]
+  },
+  "86": {
+    "name": "class_86",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "43"
+      }
+    ]
+  },
+  "87": {
+    "name": "class_87",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "44"
+      }
+    ]
+  },
+  "88": {
+    "name": "class_88",
+    "source": "YOLO",
+    "original_ids": [
+      {
+        "dataset": "circuit elements",
+        "original_id": "45"
+      }
+    ]
+  },
+  "89": {
+    "name": "armature",
+    "source": "Components",
+    "original_name": "armature"
+  },
+  "90": {
+    "name": "attenuator",
+    "source": "Components",
+    "original_name": "attenuator"
+  },
+  "91": {
+    "name": "Bypass-capacitor",
+    "source": "Components",
+    "original_name": "Bypass-capacitor"
+  },
+  "92": {
+    "name": "cartridge-fuse",
+    "source": "Components",
+    "original_name": "cartridge-fuse"
+  },
+  "93": {
+    "name": "clip-lead",
+    "source": "Components",
+    "original_name": "clip-lead"
+  },
+  "94": {
+    "name": "electric-relay",
+    "source": "Components",
+    "original_name": "electric-relay"
+  },
+  "95": {
+    "name": "Electrolytic-capacitor",
+    "source": "Components",
+    "original_name": "Electrolytic-capacitor"
+  },
+  "96": {
+    "name": "filament",
+    "source": "Components",
+    "original_name": "filament"
+  },
+  "97": {
+    "name": "heat-sink",
+    "source": "Components",
+    "original_name": "heat-sink"
+  },
+  "98": {
+    "name": "induction-coil",
+    "source": "Components",
+    "original_name": "induction-coil"
+  },
+  "99": {
+    "name": "Integrated-micro-circuit",
+    "source": "Components",
+    "original_name": "Integrated-micro-circuit"
+  },
+  "100": {
+    "name": "jumper-cable",
+    "source": "Components",
+    "original_name": "jumper-cable"
+  },
+  "101": {
+    "name": "junction-transistor",
+    "source": "Components",
+    "original_name": "junction-transistor"
+  },
+  "102": {
+    "name": "LED",
+    "source": "Components",
+    "original_name": "LED"
+  },
+  "103": {
+    "name": "light-circuit",
+    "source": "Components",
+    "original_name": "light-circuit"
+  },
+  "104": {
+    "name": "limiter-clipper",
+    "source": "Components",
+    "original_name": "limiter-clipper"
+  },
+  "105": {
+    "name": "local-oscillator",
+    "source": "Components",
+    "original_name": "local-oscillator"
+  },
+  "106": {
+    "name": "memory-chip",
+    "source": "Components",
+    "original_name": "memory-chip"
+  },
+  "107": {
+    "name": "microchip",
+    "source": "Components",
+    "original_name": "microchip"
+  },
+  "108": {
+    "name": "microprocessor",
+    "source": "Components",
+    "original_name": "microprocessor"
+  },
+  "109": {
+    "name": "multiplexer",
+    "source": "Components",
+    "original_name": "multiplexer"
+  },
+  "110": {
+    "name": "omni-directional-antenna",
+    "source": "Components",
+    "original_name": "omni-directional-antenna"
+  },
+  "111": {
+    "name": "PNP-transistor",
+    "source": "Components",
+    "original_name": "PNP-transistor"
+  },
+  "112": {
+    "name": "potential-divider",
+    "source": "Components",
+    "original_name": "potential-divider"
+  },
+  "113": {
+    "name": "potentiometer",
+    "source": "Components",
+    "original_name": "potentiometer"
+  },
+  "114": {
+    "name": "pulse-generator",
+    "source": "Components",
+    "original_name": "pulse-generator"
+  },
+  "115": {
+    "name": "relay",
+    "source": "Components",
+    "original_name": "relay"
+  },
+  "116": {
+    "name": "rheostat",
+    "source": "Components",
+    "original_name": "rheostat"
+  },
+  "117": {
+    "name": "semi-conductor",
+    "source": "Components",
+    "original_name": "semi-conductor"
+  },
+  "118": {
+    "name": "semiconductor-diode",
+    "source": "Components",
+    "original_name": "semiconductor-diode"
+  },
+  "119": {
+    "name": "shunt",
+    "source": "Components",
+    "original_name": "shunt"
+  },
+  "120": {
+    "name": "solenoid",
+    "source": "Components",
+    "original_name": "solenoid"
+  },
+  "121": {
+    "name": "stabilizer",
+    "source": "Components",
+    "original_name": "stabilizer"
+  },
+  "122": {
+    "name": "step-down-transformer",
+    "source": "Components",
+    "original_name": "step-down-transformer"
+  },
+  "123": {
+    "name": "step-up-transformer",
+    "source": "Components",
+    "original_name": "step-up-transformer"
+  },
+  "124": {
+    "name": "transistor",
+    "source": "Components",
+    "original_name": "transistor"
+  },
+  "125": {
+    "name": "3d_projection",
+    "source": "3D Projected",
+    "note": "Synthetic 2D renderings from 3D models"
+  }
+}
